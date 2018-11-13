@@ -62,5 +62,12 @@ lastJ:
 colr:
 	.db		0
 
+keybit:
+	.db		0
+keyport:
+	.db		0
+keyaddress:
+	.word	0
+
 .endrelocate
 seg_data_end
