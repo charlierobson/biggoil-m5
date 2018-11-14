@@ -31,7 +31,7 @@ _keychar:
 	.asc	"QWERTYUI"
 	.asc	"ASDFGHJK"
 	.asc	"ZXCVBNM,"
-	.asc	"90-^./_\"
+	.asc	"90-^./_\\"
 	.asc	"OP@[L;:]"
 
 _kcs:
