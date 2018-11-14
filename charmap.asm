@@ -16,6 +16,16 @@
     .asciimap ';',';',$19
     .asciimap ',',',',$1a
     .asciimap '.','.',$1b
+    
+    .asciimap $5c,$5c,$40   ; backslash
+    .asciimap '[','[',$41
+    .asciimap ']',']',$42
+    .asciimap '^','^',$43
+    .asciimap '_','_',$44
+    .asciimap '!','!',$45
+    .asciimap $2c,$2c,$46   ; single quote
+    .asciimap '@','@',$60
+    
     .asciimap '0','9',{*}-'9'+$1c
     .asciimap 'a','z',{*}-'a'+$26
     .asciimap 'A','Z',{*}-'A'+$26
