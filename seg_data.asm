@@ -33,7 +33,7 @@ seg_data
 ; trigger impulse
 
 titleinputstates:
-	.byte	$31,%00000001,%00000000,0		; startgame	(1)
+	.byte	$30,%01000000,%00000000,0		; startgame	(SP)
 	.byte	$32,%00001000,%00000000,0		; redefine	(R)
 	.byte	$30,%00000000,%00000000,0
 	.byte	$30,%00000000,%00000000,0
@@ -50,6 +50,7 @@ gameinputstates:
 ;
 begin	= titleinputstates + 3
 redef	= titleinputstates + 7
+
 fire	= gameinputstates + 3
 up		= gameinputstates + 7
 down	= gameinputstates + 11

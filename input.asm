@@ -6,7 +6,7 @@ readtitleinput:
 	ld		hl,titleinputstates
 	jr		_ri
 
-readinput:
+readgameinput:
 	ld		hl,gameinputstates
 _ri:
 	in		a,($37)					; cache joystick direction data

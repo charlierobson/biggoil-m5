@@ -24,33 +24,40 @@ start:
     call    initVDP
 
 title:
-    ; set up the title screen
-    ld      hl,NAMETBL
-    call    setVDPAddress
-
     ld      hl,titel+1
-    ld      bc,33*24
--:  ld      a,(hl)
-    cp      $76
-    jr      z,{+}
-
-    out     (VDP_DATA),a
-
-+:  inc     hl
-    dec     bc
-    ld      a,b
-    or      c
-    jr      nz,{-}
+    call    showScreen
 
 hang:
-    call    readinput
+    call    readtitleinput
 
-    ld      a,(fire)
+    ld      a,(begin)
+    and     3
+    cp      1
+    jp      z,beginGame
+
+    ld      a,(redef)
     and     3
     cp      2
     jr      nz,hang
 
     call    redefinekeys
+    ld      hl,(fire-3)
+    ld      (begin-3),hl
+    jr      title
+
+
+beginGame:
+    ld      hl,level1+1
+    call    showScreen
+
+hang2:
+    call    readgameinput
+
+    ld      a,(fire)
+    and     3
+    cp      1
+    jr      nz,hang2
+
     jr      title
 
 
@@ -62,14 +69,17 @@ interrupt_routine:
 ; must come before any files defining textual data
 #include "charmap.asm"
 
-#include "font.asm"
 #include "input.asm"
 #include "vdp.asm"
 #include "redefine.asm"
 
 #include "seg_data.asm"
 
+#include "font.asm"
 #include "title.txt"
+
+level1:
+    #include "lvl1.txt"
 
     .fill   $2000-$
 
