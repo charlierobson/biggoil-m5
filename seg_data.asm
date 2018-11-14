@@ -58,10 +58,6 @@ right	= gameinputstates + 19
 
 lastJ:
 	.db		0
-
-colr:
-	.db		0
-
 keybit:
 	.db		0
 keyport:
