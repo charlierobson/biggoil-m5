@@ -1,1 +1,16 @@
-brass bom5.asm bom5.rom -l bom5.html
+#!/bin/bash 
+
+function compress {
+    brass data/$1.txt data/$1.bin
+    data/lz48 -i data/$1.bin -o data/$1.binlz
+    rm data/$1.bin
+}
+
+compress title
+compress end
+compress lvl1
+compress lvl2
+compress lvl3
+compress lvl4
+
+brass -s bom5.asm bom5.rom -l bom5.html

@@ -56,32 +56,34 @@ _bit2bytetbl:
 _pkf:
 	.asc	"press key for:",$ff
 _upk:
-    .dw     up-3                ; -3 because UP points at last byte of 4 byte structure
+    .dw     ctlUp-3                ; -3 because UP points at last byte of 4 byte structure
     .dw     $0a04
 	.asc	"up:    ",$ff
 _dnk:
-    .dw     down-3
+    .dw     ctlDown-3
     .dw     $0a06
 	.asc	"down:  ",$ff
 _lfk:
-    .dw     left-3
+    .dw     ctlLeft-3
     .dw     $0a08
 	.asc	"left:  ",$ff
 _rtk:
-    .dw     right-3
+    .dw     ctlRight-3
     .dw     $0a0a
 	.asc	"right: ",$ff
 _frk:
-    .dw     fire-3
+    .dw     ctlFire-3
     .dw     $0a0c
 	.asc	"fire:  ",$ff
+
+
 
 redefinekeys:
     call    cls
 
 	ld		hl,_pkf
 	ld		de,$0802
-    call    textout
+    call    textOut
 
 -:	call	_getcolbit			; wait for key release
 	jr		nz,{-}
@@ -111,7 +113,7 @@ _redeffit:
     inc     hl
     ld      d,(hl)
     inc     hl
-    call    textout
+    call    textOut
 
 _redefloop:
 	call	_getcolbit

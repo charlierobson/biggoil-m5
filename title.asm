@@ -1,33 +1,61 @@
-titleInit:
-    call    prepTitleInputs
+;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;
+.module TSC
 
-    ld      a,50
-    ld      (tcd),a
-    ret
+_tt1:
+	.asc	"press fire"
+_tt2:
+	.asc	"r:redefine"
 
+titlescn:
+	ld		hl,scnTitle
+	ld		de,dfile
+	call	decrunch
+	call	displayscoreonts
+	call	displayhionts
 
+;;	call	init_stc
 
-titleUpdate:
-    ld      a,(tcd)
-    dec     a
-    ld      (tcd),a
-    ret     nz
+_titleloop:
+	call	copyDFile
 
-    ld      a,50
-    ld      (tcd),a
+	ld		a,(frames)
+	and		127
+	jr		nz,_nochangetext
 
-    ld      a,(tt)
-    xor     $10
-    ld      (tt),a
+	ld		hl,_tt1
+	ld		a,(frames)
+	and		128
+	jr		nz,{+}
+	ld		hl,_tt2
++:  ld		de,dfile+$303
+	ld		bc,10
+	ldir
 
-    ld      hl,tts
-    add     a,l
-    ld      l,a
-    ld      de,$0817
-    ld      b,16
-    jp      textOutN
+_nochangetext:
+	ld		  a,(frames)
+	and		 15
+	jr		  nz,_noflash
 
-    .align  16
-tts:
-    .asc    "FIRE: START GAME"
-    .asc    "R: REDEFINE KEYS"
+	ld		  hl,dfile+$303
+	ld		  b,10
+_ilop:
+	ld		  a,(hl)
+	xor		 $80
+	ld		  (hl),a
+	inc		 hl
+	djnz		_ilop
+
+_noflash:
+	call	readTitleInput
+
+	ld		  a,(ctlRedef)				; redefine when r released
+	and		 3
+	cp		  2
+	call		z,redefinekeys
+
+	ld		  a,(ctlBegin)
+	and		 3
+	cp		  1
+	jr		  nz,_titleloop
+	ret

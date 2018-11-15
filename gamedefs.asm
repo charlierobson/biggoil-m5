@@ -1,0 +1,28 @@
+UP = 0
+RIGHT = 1
+DOWN = 2
+LEFT = 4
+
+PIPE_HEAD1 = $15			; '*'
+PIPE_HEAD2 = $17			; '+'
+
+FUEL1 = $14
+FUEL2 = $16
+
+ZEROZ = $1c					; '0'
+ONEZ = $1d					; '1'
+DOT = $1b					; '.'
+
+MAP_PIPE = $08				; grey square
+
+SCORE_OFFS = $2fe
+SCORE_TITLE_OFFS = $2f8
+HISCORE_OFFS = $307
+HISCORE_TITLE_OFFS = $313
+
+LVL_OFFS = $311
+MEN_OFFS = $317
+INITIAL_OFFS = $b7
+WINCH_OFFS = $34
+FUELLING_OFFS = $7a
+TIMER_OFFS = $98

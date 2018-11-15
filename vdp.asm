@@ -140,11 +140,17 @@ writeVDP:
     ret
 
 
+waitFrames:
+    call    waitVSync
+    djnz    waitFrames
 
 waitVSync:
     in      a,(VDP_STAT)                ; read/Acknowledge VDP interrupt
     and     $80
     jr      z,waitVSync
+    ld      a,(frames)
+    dec     a
+    ld      (frames),a
     ret
 
 
@@ -186,7 +192,7 @@ _setVDPAddr:
 
 
 
-textout:
+textOut:
     call    _setVDPAddr
 
 -:  ld      a,(hl)
@@ -208,6 +214,24 @@ textOutN:
     ret
 
 
+
+invertScreen:
+	ld		hl,dfile
+    ld      bc,33*24
+
+-:  ld		a,(hl)
+	xor		$80
+    ld      (hl),a
+    inc     hl
+    dec     bc
+    ld      a,b
+    or      c
+    jr      nz,{-}
+
+    ret
+
+
+
 showScreen:
     di
 
@@ -222,4 +246,25 @@ showScreen:
     otir
 
     ei
+    ret
+
+
+
+
+
+copyDFile:
+    call    waitVSync
+
+    ld      hl,NAMETBL
+    call    setVDPAddress
+    ld      hl,dfile+1
+    ld      b,24
+
+-:  ld      e,b
+    ld      bc,$2000+VDP_DATA
+    otir
+    inc     hl
+    ld      b,e
+    djnz    {-}
+
     ret

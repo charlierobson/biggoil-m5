@@ -19,11 +19,11 @@ _prepinputs:
 	ret
 
 
-readtitleinput:
+readTitleInput:
 	ld		hl,titleinputstates
 	jr		_ri
 
-readgameinput:
+readGameInput:
 	ld		hl,gameinputstates
 _ri:
 	in		a,($37)					; cache joystick direction data
