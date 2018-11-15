@@ -28,11 +28,13 @@ title_start:
     ld      hl,scn_title
     call    showScreen
 
-    call    prepTitleInputs
+    call    titleInit
 
 title_loop:
     call    waitVSync
     call    readtitleinput
+
+    call    titleUpdate
 
     ld      a,(begin)
     and     3
@@ -75,6 +77,8 @@ interrupt_routine:
 
 
 #include "charmap.asm"
+
+#include "title.asm"
 
 #include "input.asm"
 #include "vdp.asm"

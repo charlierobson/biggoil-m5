@@ -166,10 +166,8 @@ cls:
     ret
 
 
-
-textout:
+_setVDPAddr:
     push    hl
-
     ld      h,0                     ; hl = NAMETBL + (32 * e) + d
     ld      l,e
     ld      e,d
@@ -183,16 +181,31 @@ textout:
     ld      de,NAMETBL
     add     hl,de
     call    setVDPAddress
-
     pop     hl
+    ret
+
+
+
+textout:
+    call    _setVDPAddr
 
 -:  ld      a,(hl)
     cp      $ff
     ret     z
-
     out     (VDP_DATA),a
     inc     hl
     jr      {-}
+
+
+
+textOutN:
+    call    _setVDPAddr
+
+-:  ld      a,(hl)
+    out     (VDP_DATA),a
+    inc     hl
+    djnz    {-}
+    ret
 
 
 showScreen:

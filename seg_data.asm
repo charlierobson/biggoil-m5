@@ -66,5 +66,10 @@ keyport:
 keyaddress:
 	.word	0
 
+tcd:
+    .db     0
+tt:
+    .db     0
+
 .endrelocate
 seg_data_end
