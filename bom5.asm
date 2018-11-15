@@ -24,7 +24,7 @@ start:
     call    initVDP
 
 title:
-    ld      hl,titel+1
+    ld      hl,titel
     call    showScreen
 
 hang:
@@ -47,7 +47,7 @@ hang:
 
 
 beginGame:
-    ld      hl,level1+1
+    ld      hl,level1
     call    showScreen
 
 hang2:

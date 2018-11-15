@@ -195,18 +195,10 @@ showScreen:
     call    setVDPAddress
     pop     hl
 
-    ld      bc,33*24
--:  ld      a,(hl)
-    cp      $76
-    jr      z,{+}
-
-    out     (VDP_DATA),a
-
-+:  inc     hl
-    dec     bc
-    ld      a,b
-    or      c
-    jr      nz,{-}
+    ld      bc,VDP_DATA
+    otir
+    otir
+    otir
 
     ei
     ret
