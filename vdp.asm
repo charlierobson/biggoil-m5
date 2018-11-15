@@ -140,6 +140,14 @@ writeVDP:
     ret
 
 
+
+waitVSync:
+    in      a,(VDP_STAT)                ; read/Acknowledge VDP interrupt
+    and     $80
+    jr      z,waitVSync
+    ret
+
+
 cls:
     di
 

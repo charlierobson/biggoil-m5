@@ -10,6 +10,7 @@
 ipl:
     ret
 
+
 start:
     ld      hl,interrupt_routine        ; Set interrupt pointer
     ld      ($7006),hl
@@ -23,42 +24,48 @@ start:
 
     call    initVDP
 
-title:
-    ld      hl,titel
+title_start:
+    ld      hl,scn_title
     call    showScreen
 
-hang:
+    call    prepTitleInputs
+
+title_loop:
+    call    waitVSync
     call    readtitleinput
 
     ld      a,(begin)
     and     3
     cp      1
-    jp      z,beginGame
+    jp      z,game_start
 
     ld      a,(redef)
     and     3
-    cp      2
-    jr      nz,hang
+    cp      1
+    jr      nz,title_loop
 
     call    redefinekeys
     ld      hl,(fire-3)
     ld      (begin-3),hl
-    jr      title
+    jr      title_start
 
 
-beginGame:
-    ld      hl,level1
+game_start:
+    ld      hl,scn_level1
     call    showScreen
 
-hang2:
+    call    prepGameInputs
+
+game_loop:
+    call    waitVSync
     call    readgameinput
 
     ld      a,(fire)
     and     3
     cp      1
-    jr      nz,hang2
+    jr      nz,game_loop
 
-    jr      title
+    jr      title_start
 
 
 interrupt_routine:
@@ -66,7 +73,7 @@ interrupt_routine:
     ei
     reti
 
-; must come before any files defining textual data
+
 #include "charmap.asm"
 
 #include "input.asm"
@@ -76,10 +83,12 @@ interrupt_routine:
 #include "seg_data.asm"
 
 #include "font.asm"
+
+scn_title:
 #include "title.txt"
 
-level1:
-    #include "lvl1.txt"
+scn_level1:
+#include "lvl1.txt"
 
     .fill   $2000-$
 

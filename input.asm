@@ -2,6 +2,23 @@
 ;
 .module INPUT
 
+prepTitleInputs:
+	ld		hl,titleinputstates+3
+	jr		_prepinputs
+
+prepGameInputs:
+	ld		hl,gameinputstates+3
+
+_prepinputs:
+	ld		de,4
+	ld		b,5
+
+-:	ld		(hl),$ff
+	add		hl,de
+	djnz	{-}
+	ret
+
+
 readtitleinput:
 	ld		hl,titleinputstates
 	jr		_ri

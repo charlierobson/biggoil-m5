@@ -83,6 +83,9 @@ redefinekeys:
 	ld		de,$0802
     call    textout
 
+-:	call	_getcolbit			; wait for key release
+	jr		nz,{-}
+
 	ld		hl,_upk
 	call	_redeffit
 
