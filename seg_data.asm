@@ -8,7 +8,7 @@ seg_data
 ; bit in the dfile pointer, bit 10 or bit 2 of H reg.
 ;
 dfile:
-	.ds		33*24
+	.ds		33*25
 
 ;   7       6       5       4       3       2       1       0    bit
 ;-------+-------+-------+-------+-------+-------+-------+-------.

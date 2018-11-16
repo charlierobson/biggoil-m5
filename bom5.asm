@@ -183,8 +183,11 @@ _headupdate:
 
 	call	lorryfill
 
-	call	countdots
-	jp		nz,mainloop
+;	call	countdots
+;	jp		nz,mainloop
+
+	call	detectdot
+	jp		z,mainloop
 
 nextlevel:
 	ld		a,12
@@ -247,6 +250,15 @@ countdots:
 
 	ld		a,c
 	or		a
+	ret
+
+
+
+detectdot:
+	ld		hl,dfile+6*33
+	ld		bc,16*33
+	ld		a,DOT
+	cpir
 	ret
 
 
