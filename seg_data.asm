@@ -54,14 +54,13 @@ gameinputstates:
 
 ; calculate actual input impulse addresses
 ;
-ctlBegin	= titleinputstates + 3
-ctlRedef	= titleinputstates + 7
-
-ctlFire		= gameinputstates + 3
-ctlUp		= gameinputstates + 7
-ctlDown		= gameinputstates + 11
-ctlLeft		= gameinputstates + 15
-ctlRight	= gameinputstates + 19
+begin	= titleinputstates + 3
+redef	= titleinputstates + 7
+fire	= gameinputstates + 3
+up		= gameinputstates + 7
+down	= gameinputstates + 11
+left	= gameinputstates + 15
+right	= gameinputstates + 19
 
 lastJ:
 	.db		0
@@ -140,7 +139,7 @@ leveltrig:
 lx:
 	.byte	0
 
-seed:
+rndseed:
 	.word	0
 
 psound:
@@ -187,9 +186,12 @@ retractqueue:
 
 	.align  256
 enemydata:
-	.fill   EDSIZE*NENEMIES,0
+	.fill   ENEMYSIZE*NENEMIES,0
 
 
+
+
+; =-=-=-=-= self-modifying code =-=-=-=-=
 
 initentrances:
 	ld		hl,entrances
@@ -251,6 +253,7 @@ _animnum = $+1
 	inc		a
 	ld		(entrancecount),a
 	ret
+
 
 
 

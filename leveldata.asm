@@ -12,6 +12,9 @@ levelup:
 	ret
 
 
+;-------------------------------------------------------------------------------
+
+
 displaylevel:
 	ld		a,(level)			    ; level to HL, caps at 8
 	and		3					    ; cycle of 4 levels, stick on level 4 after 2 cycles
@@ -37,12 +40,18 @@ displaylvl:
 	ret
 
 
+;-------------------------------------------------------------------------------
+
+
 displaymen:
 	ld		a,(lives)
 	add		a,ZEROZ
 	ld		hl,dfile+MEN_OFFS
 	ld		(hl),a
 	ret
+
+
+;-------------------------------------------------------------------------------
 
 
 displayscoreline:
@@ -53,14 +62,16 @@ displayscoreline:
 	ret
 
 
+;-------------------------------------------------------------------------------
+
 
 createmap:
-	ld		hl,dfile				; copy top 5 lines
+	ld		hl,dfile
 	ld		de,offscreenmap
 	ld		bc,33*5
 	ldir
-
-	ld		bc,33*19				; for remainder of lines do some processing...
+	
+	ld		bc,33*19
 
 _scryit:
 	ld		a,(hl)
@@ -79,4 +90,40 @@ _storeit:
 	ld		a,b
 	or		c
 	jr		nz,_scryit
+	ret
+
+
+;-------------------------------------------------------------------------------
+
+
+countdots:
+	ld		hl,dfile+6*33
+	ld		de,16*33
+	ld		c,0
+
+-:	ld		a,(hl)
+	cp		DOT
+	jr		nz,{+}
+
+	inc		c
+
++:	inc		hl
+	dec		de
+	ld		a,d
+	or		e
+	jr		nz,{-}
+
+	ld		a,c
+	or		a
+	ret
+
+
+;-------------------------------------------------------------------------------
+
+
+detectdot:
+	ld		hl,dfile+6*33
+	ld		bc,16*33
+	ld		a,DOT
+	cpir
 	ret

@@ -3,25 +3,25 @@
 .module PLAYER
 
 tryup:
-	ld		a,(ctlUp)
+	ld		a,(up)
 	ld		de,-33
 	ld		c,UP
 	jr		doturn
 
 tryright:
-	ld		a,(ctlRight)
+	ld		a,(right)
 	ld		de,1
 	ld		c,RIGHT
 	jr		doturn
 
 trydown:
-	ld		a,(ctlDown)
+	ld		a,(down)
 	ld		de,33
 	ld		c,DOWN
 	jr		doturn
 
 tryleft:
-	ld		a,(ctlLeft)
+	ld		a,(left)
 	ld		de,-1
 	ld		c,LEFT
 
@@ -97,7 +97,6 @@ _intothevoid:
 
 	xor		a
 	ret
-
 
 
 retract:

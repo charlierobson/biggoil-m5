@@ -56,23 +56,23 @@ _bit2bytetbl:
 _pkf:
 	.asc	"press key for:",$ff
 _upk:
-    .dw     ctlUp-3                ; -3 because UP points at last byte of 4 byte structure
+    .dw     up-3                ; -3 because UP points at last byte of 4 byte structure
     .dw     $0a04
 	.asc	"up:    ",$ff
 _dnk:
-    .dw     ctlDown-3
+    .dw     down-3
     .dw     $0a06
 	.asc	"down:  ",$ff
 _lfk:
-    .dw     ctlLeft-3
+    .dw     left-3
     .dw     $0a08
 	.asc	"left:  ",$ff
 _rtk:
-    .dw     ctlRight-3
+    .dw     right-3
     .dw     $0a0a
 	.asc	"right: ",$ff
 _frk:
-    .dw     ctlFire-3
+    .dw     fire-3
     .dw     $0a0c
 	.asc	"fire:  ",$ff
 

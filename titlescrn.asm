@@ -8,16 +8,16 @@ _tt2:
 	.asc	"r:redefine"
 
 titlescn:
-	ld		hl,scnTitle
+	ld		hl,title
 	ld		de,dfile
 	call	decrunch
 	call	displayscoreonts
 	call	displayhionts
 
-;;	call	init_stc
+	call	init_stc
 
 _titleloop:
-	call	copyDFile
+	call	framesync
 
 	ld		a,(frames)
 	and		127
@@ -47,14 +47,14 @@ _ilop:
 	djnz		_ilop
 
 _noflash:
-	call	readTitleInput
+	call		readtitleinput
 
-	ld		  a,(ctlRedef)				; redefine when r released
+	ld		  a,(redef)				; redefine when r released
 	and		 3
 	cp		  2
 	call		z,redefinekeys
 
-	ld		  a,(ctlBegin)
+	ld		  a,(begin)
 	and		 3
 	cp		  1
 	jr		  nz,_titleloop

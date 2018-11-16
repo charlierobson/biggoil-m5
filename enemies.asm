@@ -2,34 +2,13 @@
 ;
 .module ENEMIES
 
-EDSIZE = 8
-NENEMIES = 10
-
-
-MINUS = $16
-ERLCHAR = $12
-ELRCHAR = $13
-
-enemyanimL2R = 0
-enemyanimR2L = 1
-
-
-EO_ENA = 0	; enemy enable 1 = active
-EO_ADL = 1	; screen address lo
-EO_ADH = 2	; screen address hi
-EO_MDL = 3	; move delta lo
-EO_MDH = 4	; move delta hi
-EO_ANL = 5	; animation ptr lo
-EO_ANH = 6	; animation ptr hi
-EO_FNO = 7	; frame num
-
-
 initialiseenemies:
 	ld		hl,enemydata
 	ld		de,enemydata+1
-	ld		bc,EDSIZE*NENEMIES-1
+	ld		bc,ENEMYSIZE*NENEMIES-1
 	ld		(hl),0
 	ldir
+
 	ld		iy,enemydata
 	ret
 
@@ -66,13 +45,12 @@ generateenemy:
 	ret
 
 
-
 startenemy:
 	ld		a,3
 	call	AFXPLAY
 
 	xor		a
-	ld		de,EDSIZE
+	ld		de,ENEMYSIZE
 	ld		b,NENEMIES
 
 	ld		iy,enemydata
@@ -139,7 +117,7 @@ updateenemies:
 	ld		iy,enemydata
 	jr		{+}
 
--:	ld		de,EDSIZE				; de is corrupted in call so need to re-init
+-:	ld		de,ENEMYSIZE			; de is corrupted in call so need to re-init
 	add		iy,de
 +:	ld		a,(iy)
 	cp		1
@@ -246,11 +224,11 @@ _edied:
 
 
 resetenemies:
-	ld		iy,enemydata-EDSIZE
+	ld		iy,enemydata-ENEMYSIZE
 	ld		b,NENEMIES
-	ld		de,EDSIZE
 
--:	add		iy,de
+-:	ld		de,ENEMYSIZE
+	add		iy,de
 	ld		a,(iy)
 	cp		1
 	jr		nz,{+}

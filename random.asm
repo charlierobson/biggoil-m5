@@ -5,12 +5,12 @@ seedrnd:
 	ld		l,a
 	ld		a,r
 	ld		h,a
-	ld		(seed),hl
+	ld		(rndseed),hl
 	ret
 
 
 xrnd8:
-	ld		a,(seed)
+	ld		a,(rndseed)
 	ld		c,a
 	rrca
 	rrca
@@ -18,12 +18,12 @@ xrnd8:
 	xor		$1f
 	add		a,c
 	sbc		a,255
-	ld		(seed),a
+	ld		(rndseed),a
 	ret
 
 
 xrnd16:
-	ld		hl,(seed)					; seed must not be 0
+	ld		hl,(rndseed)	    ; rndseed must not be 0
 	ld		a,h
 	rra
 	ld		a,l
@@ -38,5 +38,5 @@ xrnd16:
 	ld		l,a
 	xor		h
 	ld		h,a
-	ld		(seed),hl
+	ld		(rndseed),hl
 	ret

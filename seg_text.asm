@@ -1,19 +1,19 @@
-scnLevel1:
+level1:
 	.incbin data/lvl1.binlz
 
-scnLevel2:
+level2:
 	.incbin	data/lvl2.binlz
 
-scnLevel3:
+level3:
 	.incbin	data/lvl3.binlz
 
-scnLevel4:
+level4:
 	.incbin	data/lvl4.binlz
 
-scnTitle:
+title:
 	.incbin data/title.binlz
 
-scnEnd:
+end:
 	.incbin data/end.binlz
 
 ; the turntable tells us which character should be displayed at a pipe junction
@@ -47,7 +47,7 @@ enemyanims:
 
 	.align	64
 leveldata:
-	.word	scnLevel1, scnLevel2, scnLevel3, scnLevel4
+	.word	level1, level2, level3, level4
 
 	.align  16
 winchanim:

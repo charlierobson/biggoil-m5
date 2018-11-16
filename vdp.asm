@@ -140,6 +140,7 @@ writeVDP:
     ret
 
 
+waitframes:
 waitFrames:
     call    waitVSync
     djnz    waitFrames
@@ -251,8 +252,7 @@ showScreen:
 
 
 
-
-copyDFile:
+framesync:
     call    waitVSync
 
     ld      hl,NAMETBL

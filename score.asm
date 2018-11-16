@@ -35,7 +35,7 @@ _addbonus:
 
 	ld		a,$47					; length of uninterruptable sample
 	ld		b,10					; sfx number
-;	call	longplay
+	call	longplay
 
 displayscore:
 	ld		de,dfile+SCORE_OFFS

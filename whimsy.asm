@@ -2,12 +2,6 @@
 ;
 .module WHIMSY
 
-
-START1 = 0
-LEN1 = 18
-START2 = 23
-LEN2 = 10
-
 updatecloud:
 	ld		a,(frames)
 	and		a
@@ -20,8 +14,8 @@ updatecloud:
 	or		clouds & 255
 	ld		l,a
 	ld		h,clouds / 256
-	ld		de,dfile+1+START1
-	ld		bc,LEN1
+	ld		de,dfile+1+CLDSTART1
+	ld		bc,CLDLEN1
 	ldir
 	inc		hl
 	inc		hl
@@ -31,7 +25,7 @@ updatecloud:
 	inc		de
 	inc		de
 	inc		de
-	ld		bc,LEN2
+	ld		bc,CLDLEN2
 	ldir
 	ret
 
@@ -61,34 +55,23 @@ showwinch:
 	ret
 
 
-gameoverscreen: 
-	ld		hl,scnEnd
-	ld		de,dfile
-	call	decrunch
 
-;;	call	init_stc
-;;	ld		a,16
-;;	ld		(pl_current_position),a
-;;	call	next_pattern
+invertscreen:
+	ld		hl,dfile
+	ld		bc,33*24
 
-	ld		a,150
-	ld		(timeout),a
+_inverter:
+	ld		a,(hl)
+	cp		$76
+	jr		z,_noinvert
 
-_endloop:
-	call	copyDFile
-	call	readGameInput
+	xor		$80
+	ld		(hl),a
 
-;;	ld		a,(pl_current_position)
-;;	cp		18
-;;	call	z,initsfx
-
-	ld		a,(ctlFire)
-	and		3
-	cp		1
-	ret		z
-
-	ld		a,(timeout)
-	dec		a
-	ld		(timeout),a
-	jr		nz,_endloop
+_noinvert:
+	inc		hl
+	dec		bc
+	ld		a,b
+	or		c
+	jr		nz,_inverter
 	ret
