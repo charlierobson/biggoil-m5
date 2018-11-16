@@ -127,3 +127,46 @@ detectdot:
 	ld		a,DOT
 	cpir
 	ret
+
+
+;-------------------------------------------------------------------------------
+
+
+initentrances:
+	ld		hl,entrances
+
+_c1:
+	xor		a
+	ld		(entrancecount),a
+	ld		(_adval1),a
+	inc		a
+	ld		(_adval0),a
+	ld		a,enemyanimL2R
+	ld		(_animnum),a
+	ld		de,dfile+$c7-33		    ; start checking at row 5
+	call	checkcolumn
+
+_c2:
+	ld		a,$ff
+	ld		(_adval0),a
+	ld		(_adval1),a
+	ld		a,enemyanimR2L
+	ld		(_animnum),a
+	ld		de,dfile+$e6-33
+
+checkcolumn:
+	ld		b,17
+
+_nextrow:
+	push	hl
+	ld		hl,33
+	add		hl,de
+	ex		de,hl
+	pop		hl
+
+	ld		a,(de)
+	cp		DOT
+	call	z,_add
+	djnz	_nextrow
+
+	ret
