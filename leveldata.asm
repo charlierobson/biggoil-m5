@@ -53,3 +53,30 @@ displayscoreline:
 	ret
 
 
+
+createmap:
+	ld		hl,dfile				; copy top 5 lines
+	ld		de,offscreenmap
+	ld		bc,33*5
+	ldir
+
+	ld		bc,33*19				; for remainder of lines do some processing...
+
+_scryit:
+	ld		a,(hl)
+	cp		0
+	jr		z,_storeit
+	cp		DOT
+	jr		z,_storeit
+	cp		$76
+	jr		z,_storeit
+	ld		a,128
+_storeit:
+	ld		(de),a
+	inc		hl
+	inc		de
+	dec		bc
+	ld		a,b
+	or		c
+	jr		nz,_scryit
+	ret

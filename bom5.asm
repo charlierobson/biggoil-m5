@@ -49,6 +49,7 @@ entitled:
 
 newlevel:
 	call	displaylevel
+	call	createmap
 	call	initentrances
 
 	ld		hl,dfile
