@@ -149,10 +149,6 @@ psound:
 ; -=-=-=- GAP -=-=-=-
 ;
 
-	.align	128
-entrances:
-	.fill	12*8,0          ; up to 10 entrances, 8 bytes apiece
-
 
 newtone:
 newtonep1=newtone+1
@@ -162,14 +158,16 @@ newtonep4=newtone+11
 	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$D0,$20
 	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$D0,$20
 
+
+
 ;
 ; -=-=-=- GAP -=-=-=-
 ;
 
 
-.align $400
+.align $100
 .if $ != $7400
-;.fail "offscreen map needs to be at $x400 boundary"
+.fail "offscreen map needs to be at $x400 boundary"
 .endif
 offscreenmap:
 	.fill   33*24
@@ -177,6 +175,10 @@ offscreenmap:
 ;
 ; -=-=-=- GAP -=-=-=-
 ;
+
+	.align	128
+entrances:
+	.fill	12*8,0          ; up to 10 entrances, 8 bytes apiece
 
 
 ;	.word   0               ; padding byte - do not remove
@@ -191,7 +193,8 @@ enemydata:
 
 
 
-; =-=-=-=-= self-modifying code =-=-=-=-=
+; =-=-=-=-= self-modifying codez =-=-=-=-=
+
 
 initentrances:
 	ld		hl,entrances
