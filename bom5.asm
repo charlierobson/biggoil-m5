@@ -14,6 +14,8 @@ ipl:
 
 
 start:
+	ld		sp,$7fff
+
     ld      hl,interrupt_routine        ; Set interrupt pointer
     ld      ($7006),hl
     ld      a,$01                       ; Disable timer interrupt

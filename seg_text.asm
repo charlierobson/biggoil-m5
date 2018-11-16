@@ -16,13 +16,24 @@ scnTitle:
 scnEnd:
 	.incbin data/end.binlz
 
+; the turntable tells us which character should be displayed at a pipe junction
+; we make an index from the last direction and the latest direction.
+; current dir << 3 + new dir
+; see UP, DOWN etc in gamedefs.
+;
+; up -> up = 0
+; up -> right = 1
+; up -> left = 4
+; right -> up = 8
+; etc. etc.
+;
 	.align 256
 turntable:
-	.byte   $3f,$3f,$00,$00,$3e,$00,$00,$00
-	.byte   $36,$36,$3e,$00,$00,$00,$00,$00
-	.byte   $00,$3d,$3f,$00,$36,$00,$00,$00
+	.byte   $85,$85,$00,$00,$84,$00,$00,$00
+	.byte   $03,$03,$84,$00,$00,$00,$00,$00
+	.byte   $00,$02,$85,$00,$03,$00,$00,$00
 	.byte   $00,$00,$00,$00,$00,$00,$00,$00
-	.byte   $3d,$00,$3f,$00,$36,$00,$00,$00
+	.byte   $02,$00,$85,$00,$03,$00,$00,$00
 	.byte   $00,$00,$00,$00,$00,$00,$00,$00
 
 	.align 16

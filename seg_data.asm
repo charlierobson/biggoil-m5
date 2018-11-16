@@ -1,15 +1,14 @@
-seg_data_target = $7080
+seg_data_target = $7000
 
 seg_data
 .relocate seg_data_target
 
-.align  128
-.if $ != $7080
-.fail "dfile needs to be at $x000 boundary"
-.endif
+; dfile is mirrored by this map at +$400 bytes further on in memory,
+; this is to allow quick indexing into the map by setting a single
+; bit in the dfile pointer, bit 10 or bit 2 of H reg.
+;
 dfile:
 	.ds		33*24
-
 
 ;   7       6       5       4       3       2       1       0    bit
 ;-------+-------+-------+-------+-------+-------+-------+-------.
@@ -147,6 +146,15 @@ seed:
 psound:
 	.byte	0
 
+;
+; -=-=-=- GAP -=-=-=-
+;
+
+	.align	128
+entrances:
+	.fill	12*8,0          ; up to 10 entrances, 8 bytes apiece
+
+
 newtone:
 newtonep1=newtone+1
 newtonep2=newtone+5
@@ -155,24 +163,24 @@ newtonep4=newtone+11
 	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$D0,$20
 	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$D0,$20
 
-
-; dfile is mirrored by this map at +$400 bytes further on in memory,
-; this is to allow quick indexing into the map by setting a single
-; bit in the dfile pointer, bit 10 or bit 2 of H reg.
 ;
-.align  128
-.if $ != $7480
+; -=-=-=- GAP -=-=-=-
+;
+
+
+.align $400
+.if $ != $7400
 ;.fail "offscreen map needs to be at $x400 boundary"
 .endif
 offscreenmap:
 	.fill   33*24
 
+;
+; -=-=-=- GAP -=-=-=-
+;
 
-	.align	128
-entrances:
-	.fill	12*8,0          ; up to 10 entrances, 8 bytes apiece
 
-	.word   0               ; padding byte - do not remove
+;	.word   0               ; padding byte - do not remove
 	.align  256
 retractqueue:
 	.fill   256,$ff
