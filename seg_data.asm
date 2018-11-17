@@ -1,11 +1,15 @@
 initmem:
+	; clear mem up to the expected stack bottom
+	;
 	ld		hl,$7000
 	ld		de,$7001
-	ld		bc,$e00
+	ld		bc,$f80
 	xor		a
 	ld		(hl),a
 	ldir
 
+	; copy readwrite data to ram
+	;
     ld      hl,seg_data
     ld      de,seg_data_target
     ld      bc,seg_data_end - seg_data
@@ -36,8 +40,9 @@ end:
 reversetab:
 	.word   33,-1,-33,0,1
 
-; the turntable tells us which character should be displayed at a pipe junction
-; we make an index from the last direction and the latest direction.
+; the turntable tells us which character should be 
+; displayed at a pipe junction. we make an index
+; from the last direction and the latest direction.
 ; current dir << 3 + new dir
 ; see UP, DOWN etc in gamedefs.
 ;
@@ -92,7 +97,7 @@ clouds:
 dfile = $7000
 offscreenmap = $7400
 
-; initialised data goes here
+; initialised data goes here, in space between dfile & offscreen
 seg_data_target = $7320
 
 ; uninitialised data goes here
