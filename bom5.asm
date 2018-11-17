@@ -14,11 +14,10 @@ ipl:
 
 
 start:
+    di
 	ld		sp,$7fff
 
-    ld      hl,interrupt_routine        ; Set interrupt pointer
-    ld      ($7006),hl
-    ld      a,$01                       ; Disable timer interrupt
+    ld      a,$01                   ; Disable timer interrupt
     out     ($01),a
 
     call    initmem
@@ -26,22 +25,13 @@ start:
 	call	seedrnd
     call    initVDP
 
-;	ld		b,100					; give time for crappy LCD tvs to re-sync
+;	ld		b,100                   ; give time for crappy LCD tvs to re-sync
 ;	call	waitframes
 
 -:	call	titlescn
 	call	game
 	call	gameoverscn
 	jr		{-}
-
-
-;-------------------------------------------------------------------------------
-
-
-interrupt_routine:
-    in      a,(VDP_STAT)                ; Acknowledge VDP interrupt
-    ei
-    reti
 
 
 ;-------------------------------------------------------------------------------

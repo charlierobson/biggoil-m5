@@ -49,8 +49,6 @@ COL_GREY     .equ $0E
 COL_WHITE    .equ $0F
 
 initVDP:
-    di
-
     ; set graphic 1 mode, bg col, vram layout.
 
     ld      b,0
@@ -104,7 +102,6 @@ initVDP:
 -:  out     (VDP_DATA),a
     djnz    {-}
 
-    ei
     ret
 
 
@@ -130,13 +127,11 @@ setVDPAddress:
 ;  HL     .equ address
 ;
 writeVDP:
-    di
     ld      a,c
     out     (VDP_REG),a
     ld      a,b
     or      $80
     out     (VDP_REG),a
-    ei
     ret
 
 
@@ -156,8 +151,6 @@ waitVSync:
 
 
 cls:
-    di
-
     ld      hl,NAMETBL
     call    setVDPAddress
 
@@ -169,7 +162,6 @@ cls:
     dec     c
     jr      nz,{-}
 
-    ei
     ret
 
 
@@ -234,8 +226,6 @@ invertScreen:
 
 
 showScreen:
-    di
-
     push    hl
     ld      hl,NAMETBL
     call    setVDPAddress
@@ -246,7 +236,6 @@ showScreen:
     otir
     otir
 
-    ei
     ret
 
 
