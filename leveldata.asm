@@ -138,20 +138,20 @@ initentrances:
 _c1:
 	xor		a
 	ld		(entrancecount),a
-	ld		(_adval1),a
+	ld		(adval1),a
 	inc		a
-	ld		(_adval0),a
+	ld		(adval0),a
 	ld		a,enemyanimL2R
-	ld		(_animnum),a
+	ld		(animnum),a
 	ld		de,dfile+$c7-33		    ; start checking at row 5
 	call	checkcolumn
 
 _c2:
 	ld		a,$ff
-	ld		(_adval0),a
-	ld		(_adval1),a
+	ld		(adval0),a
+	ld		(adval1),a
 	ld		a,enemyanimR2L
-	ld		(_animnum),a
+	ld		(animnum),a
 	ld		de,dfile+$e6-33
 
 checkcolumn:
@@ -166,7 +166,7 @@ _nextrow:
 
 	ld		a,(de)
 	cp		DOT
-	call	z,_add
+	call	z,addv
 	djnz	_nextrow
 
 	ret

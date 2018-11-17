@@ -1,14 +1,111 @@
-seg_data_target = $7000
+initmem:
+	ld		hl,$7000
+	ld		de,$7001
+	ld		bc,$e00
+	xor		a
+	ld		(hl),a
+	ldir
 
-seg_data
-.relocate seg_data_target
+    ld      hl,seg_data
+    ld      de,seg_data_target
+    ld      bc,seg_data_end - seg_data
+    ldir
+	ret
 
-; dfile is mirrored by this map at +$400 bytes further on in memory,
-; this is to allow quick indexing into the map by setting a single
-; bit in the dfile pointer, bit 10 or bit 2 of H reg.
+
+level1:
+	.incbin data/lvl1.binlz
+
+level2:
+	.incbin	data/lvl2.binlz
+
+level3:
+	.incbin	data/lvl3.binlz
+
+level4:
+	.incbin	data/lvl4.binlz
+
+title:
+	.incbin data/title.binlz
+
+end:
+	.incbin data/end.binlz
+
+
+	.align 16
+reversetab:
+	.word   33,-1,-33,0,1
+
+; the turntable tells us which character should be displayed at a pipe junction
+; we make an index from the last direction and the latest direction.
+; current dir << 3 + new dir
+; see UP, DOWN etc in gamedefs.
 ;
-dfile:
-	.ds		33*25
+; up -> up = 0
+; up -> right = 1
+; up -> left = 4
+; right -> up = 8
+; etc. etc.
+;
+	.align 256
+turntable:
+	.byte   $85,$85,$00,$00,$84,$00,$00,$00
+	.byte   $03,$03,$84,$00,$00,$00,$00,$00
+	.byte   $00,$02,$85,$00,$03,$00,$00,$00
+	.byte   $00,$00,$00,$00,$00,$00,$00,$00
+	.byte   $02,$00,$85,$00,$03,$00,$00,$00
+	.byte   $00,$00,$00,$00,$00,$00,$00,$00
+
+	.align  16
+winchanim:
+	.byte   $00,$01
+	.byte   $00,$04
+	.byte   $87,$00
+	.byte   $02,$00
+
+	.align	64
+leveldata:
+	.word	level1, level2, level3, level4
+
+	.align 16
+enemyanims:
+	.byte   $10,$13     ;ENEMY,ENEMY|128 ; enemyanim0
+	.byte   $11,$12     ;ENEMY-1,ENEMY-1|128 ; enemyanim1 etc
+
+
+
+scoreline:
+	.byte	$38, $28, $34, $37, $2a, $0e, $1c, $1c, $1c, $1c, $1c, $00, $2d, $2e, $0e, $1c, $1c, $1c, $1c, $1c, $00, $31, $3b, $31, $0e, $1d, $00, $32, $2a, $33, $0e, $20
+
+
+	.align  128
+clouds:
+	.byte	$00, $0a, $08, $09, $00, $00, $00, $00, $00, $00, $00, $0a, $0a, $09, $09, $00, $00, $00, $08, $08, $0a, $00, $00, $00, $00, $00, $00, $09, $08, $08, $0a, $00
+	.byte	$00, $00, $00, $09, $09, $00, $00, $00, $00, $0a, $08, $00, $00, $00, $00, $09, $0a, $00, $00, $00, $09, $09, $08, $00, $00, $00, $00, $00, $00, $0a, $09, $00
+	.byte	$00, $0a, $08, $09, $00, $00, $00, $00, $00, $00, $00, $0a, $0a, $09, $09, $00, $00, $00, $08, $08, $0a, $00, $00, $00, $00, $00, $00, $09, $08, $08, $0a, $00
+
+
+; dfile is mirrored at +$400 bytes further on in memory,
+; this is to allow quick indexing into the map by setting
+; a single bit in the dfile pointer, bit 2 of H reg.
+;
+dfile = $7000
+offscreenmap = $7400
+
+; initialised data goes here
+seg_data_target = $7320
+
+; uninitialised data goes here
+seg_bss_target = $7720
+
+
+; retractqueue code requires a 'backstop' - the byte at $77ff is used.
+;
+retractqueue = $7800
+entrances = $7900
+
+seg_data:
+.relocate seg_data_target
 
 ;   7       6       5       4       3       2       1       0    bit
 ;-------+-------+-------+-------+-------+-------+-------+-------.
@@ -62,92 +159,11 @@ down	= gameinputstates + 11
 left	= gameinputstates + 15
 right	= gameinputstates + 19
 
-lastJ:
-	.db		0
-keybit:
-	.db		0
-keyport:
-	.db		0
-keyaddress:
-	.word	0
-
-tcd:
-    .db     0
-tt:
-    .db     0
-
-frames:
-	.db		0
-
-winchframe:
-	.byte   0
-
 headchar:
 	.byte   PIPE_HEAD1
 
-playerpos:
-	.word   0
-
-oldplayerpos:
-	.word   0
-
-playerhit:
-	.byte   0
-
-playerdirn:
-	.word   0
-
-retractptr:
-	.word   0
-
-timerv:
-	.byte   0
-
-scoretoadd:
-	.byte   0
-
-score:
-	.word   0
-
-hiscore:
-	.word   0
-
-lives:
-	.byte   0
-
-entrancecount:
-	.byte	0
-
-level:
-	.byte	0
-
-timeout:
-	.byte   0
-
 fuelchar:
 	.byte   FUEL1
-
-cldfrm:
-	.byte   0
-
-generatimer:
-	.byte	0
-
-leveltrig:
-	.byte	0
-
-lx:
-	.byte	0
-
-rndseed:
-	.word	0
-
-psound:
-	.byte	0
-
-;
-; -=-=-=- GAP -=-=-=-
-;
 
 
 newtone:
@@ -160,56 +176,23 @@ newtonep4=newtone+11
 
 
 
-;
-; -=-=-=- GAP -=-=-=-
-;
-
-
-.align $100
-.if $ != $7400
-.fail "offscreen map needs to be at $x400 boundary"
-.endif
-offscreenmap:
-	.fill   33*24
-
-;
-; -=-=-=- GAP -=-=-=-
-;
-
-	.align	128
-entrances:
-	.fill	12*8,0          ; up to 10 entrances, 8 bytes apiece
-
-
-;	.word   0               ; padding byte - do not remove
-	.align  256
-retractqueue:
-	.fill   256,$ff
-
-	.align  256
-enemydata:
-	.fill   ENEMYSIZE*NENEMIES,0
-
-
-
-
 ; =-=-=-=-= self-modifying codez =-=-=-=-=
 
 
 ; called from initentrances in leveldata
 ;
-_add:
+addv:
 	ld		(hl),e
 	inc		hl
 	ld		(hl),d
 	inc		hl
-_adval0 = $+1
+adval0 = $+1
 	ld		(hl),0
 	inc		hl
-_adval1 = $+1
+adval1 = $+1
 	ld		(hl),0
 	inc		hl
-_animnum = $+1
+animnum = $+1
 	ld		(hl),0
 	inc		hl
 	inc		hl
@@ -222,7 +205,42 @@ _animnum = $+1
 	ret
 
 
-
+.if $ >= $7400
+.fail "relocatable data is too large to fit the gap"
+.endif
 
 .endrelocate
 seg_data_end
+
+
+
+seg_bss:
+.varloc seg_bss_target,$e0
+	.var	byte, lastJ
+	.var	byte, keybit
+	.var	byte, keyport
+	.var	word, keyaddress
+	.var	byte, tcd
+	.var	byte, tt
+	.var	byte, frames
+	.var	byte, winchframe
+	.var	word, playerpos
+	.var	word, oldplayerpos
+	.var	byte, playerhit
+	.var	word, playerdirn
+	.var	word, retractptr
+	.var	byte, timerv
+	.var	byte, scoretoadd
+	.var	word, score
+	.var	word, hiscore
+	.var	byte, lives
+	.var	byte, entrancecount
+	.var	byte, level
+	.var	byte, timeout
+	.var	byte, cldfrm
+	.var	byte, generatimer
+	.var	byte, leveltrig
+	.var	byte, lx
+	.var	word, rndseed
+	.var	byte, psound
+	.var	byte[ENEMYSIZE*NENEMIES], enemydata

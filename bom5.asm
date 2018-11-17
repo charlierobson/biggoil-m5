@@ -21,10 +21,7 @@ start:
     ld      a,$01                       ; Disable timer interrupt
     out     ($01),a
 
-    ld      hl,seg_data
-    ld      de,seg_data_target
-    ld      bc,seg_data_end - seg_data
-    ldir
+    call    initmem
 
 	call	seedrnd
     call    initVDP
@@ -71,10 +68,14 @@ interrupt_routine:
 #include "stcplay.asm"
 #include "ayfxplay.asm"
 
-#include "seg_data.asm"
-#include "seg_text.asm"
-
 #include "font.asm"
 
+#include "seg_data.asm"
+
+    .echoln ""
+    .echo "Rom size is ", $-$2000
+    .echoln " bytes."
+    .echoln ""
 
     .end
+
