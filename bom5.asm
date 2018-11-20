@@ -12,21 +12,53 @@
 ipl:
     ret
 
+clrirq:
+    reti
+
+vbl:
+    ex      af,af'
+
+    in      a,(VDP_STAT)
+
+    ld      a,(frames2)
+    inc     a
+    ld      (frames2),a
+
+    out     (VDP_REG),a
+
+    ld      a,$87
+    out     (VDP_REG),a
+
+    ex      af,af'
+    ei
+    ret
+
 
 start:
     di
+    call    clrirq                  ; release irq
+
 	ld		sp,$7fff
 
-    ld      a,$01                   ; Disable timer interrupt
+    ld      a,$00                   ; Disable timer interrupt
+    out     ($00),a
+    ld      a,$01
     out     ($01),a
 
     call    initmem
-
-	call	seedrnd
     call    initVDP
 
-;	ld		b,100                   ; give time for crappy LCD tvs to re-sync
-;	call	waitframes
+	call	seedrnd
+
+    ld      hl,clrirq
+    ld      ($7000),hl
+    ld      ($7002),hl
+    ld      ($7004),hl
+
+    ld      hl,vbl
+    ld      ($7006),hl
+
+    ei
 
 -:	call	titlescn
 	call	game

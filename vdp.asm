@@ -106,7 +106,7 @@ initVDP:
 
 
 graphic1data:
-    .db     $01,$c0,$05,$80,$01,$20,$00,COL_WHITE
+    .db     $01,$e0,$05,$80,$01,$20,$00,COL_WHITE
 
 
 ; set vdp write address
@@ -141,9 +141,11 @@ waitFrames:
     djnz    waitFrames
 
 waitVSync:
-    in      a,(VDP_STAT)                ; read/Acknowledge VDP interrupt
-    and     $80
-    jr      z,waitVSync
+    ld      hl,frames2
+    ld      a,(hl)
+-:  cp      (hl)
+    jr      z,{-}
+
     ld      a,(frames)
     dec     a
     ld      (frames),a
