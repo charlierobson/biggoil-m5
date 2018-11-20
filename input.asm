@@ -19,19 +19,22 @@ _prepinputs:
 	ret
 
 
-readtitleinput:
-	ld		hl,titleinputstates
-	jr		_ri
-
-readinput:
-	ld		hl,gameinputstates
-_ri:
+_rib:
 	in		a,($37)					; cache joystick direction data
 	ld		(lastJ),a
+	ret
 
-	; hl points at first input state block,
-	; return from update function pointing to next
-	;
+
+readtitleinput:
+	call	_rib
+	ld		hl,titleinputstates
+	call	updateinputstate ; (begin)
+	jp		updateinputstate ; (redefine)
+
+
+readinput:
+	call	_rib
+	ld		hl,gameinputstates
 	call	updateinputstate ; (up)
 	call	updateinputstate ; (down)
 	call	updateinputstate ;  etc.
@@ -40,6 +43,9 @@ _ri:
 	; fall into here for last input
 
 updateinputstate:
+	; hl points at first input state block,
+	; return from update function pointing to next
+	;
 	ld		c,(hl)					; get key row input port
 	in		a,(c)					; read key row
 	inc		hl						; point to row mask

@@ -106,7 +106,7 @@ initVDP:
 
 
 graphic1data:
-    .db     $00,$c0,$05,$80,$01,$20,$00,COL_WHITE
+    .db     $01,$c0,$05,$80,$01,$20,$00,COL_WHITE
 
 
 ; set vdp write address

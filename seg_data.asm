@@ -3,7 +3,7 @@ initmem:
 	;
 	ld		hl,$7000
 	ld		de,$7001
-	ld		bc,$f80
+	ld		bc,$0ff8
 	xor		a
 	ld		(hl),a
 	ldir
@@ -94,20 +94,21 @@ clouds:
 ; this is to allow quick indexing into the map by setting
 ; a single bit in the dfile pointer, bit 2 of H reg.
 ;
-dfile = $7000
-offscreenmap = $7400
+dfile = $7020
+offscreenmap = $7420		;	dfile + $400
 
 ; initialised data goes here, in space between dfile & offscreen
-seg_data_target = $7320
+seg_data_target = $7340		;	dfile + $300 + $20
 
 ; uninitialised data goes here
-seg_bss_target = $7720
+seg_bss_target = $7800
+seg_bss_size = $100
 
 
 ; retractqueue code requires a 'backstop' - the byte at $77ff is used.
 ;
-retractqueue = $7800
-entrances = $7900
+retractqueue = $7900
+entrances = $7a00
 
 seg_data:
 .relocate seg_data_target
@@ -143,9 +144,6 @@ seg_data:
 titleinputstates:
 	.byte	$30,%01000000,%00000000,0		; startgame	(SP)
 	.byte	$32,%00001000,%00000000,0		; redefine	(R)
-	.byte	$30,%00000000,%00000000,0
-	.byte	$30,%00000000,%00000000,0
-	.byte	$30,%00000000,%00000000,0
 
 gameinputstates:
 	.byte	$30,%01000000,%00000000,0		; fire	(SP)
@@ -210,7 +208,7 @@ animnum = $+1
 	ret
 
 
-.if $ >= $7400
+.if $ >= offscreenmap
 .fail "relocatable data is too large to fit the gap"
 .endif
 
@@ -220,7 +218,7 @@ seg_data_end
 
 
 seg_bss:
-.varloc seg_bss_target,$e0
+.varloc seg_bss_target,seg_bss_size
 	.var	byte, lastJ
 	.var	byte, keybit
 	.var	byte, keyport
