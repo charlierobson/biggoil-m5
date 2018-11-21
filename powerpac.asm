@@ -14,12 +14,15 @@
         ; Entry Point
         ; --- START PROC L2007 ---
 L2007:  DI
-        LD      SP,7300h
+
+        LD      SP,7300h      ; initialise vdp
         LD      HL,208Ch
         LD      BC,1011h
         OTIR
-        LD      HL,2081h
+
+        LD      HL,2081h      ; install vsync irq
         LD      (7006h),HL
+
         CALL    L27BF
         CALL    L2AF4
         LD      HL,7300h
@@ -1745,6 +1748,7 @@ L27C4:  LD      B,10h
         LD      C,A
         CP      80h
         JR      NZ,L27C4
+
         LD      BC,1000h
         CALL    L2B29
         LD      HL,7A40h
