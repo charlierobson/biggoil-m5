@@ -1,15 +1,9 @@
-.define DB .db
-.define DW .dw
-.define ORG .org
-;
-; assembles to byte exact copy of PowerPac (PAL) rom.
-;
+
         ORG     2000h
 
         DB      02h
-        DW      2007h
-        DW      2D7Bh
-        DW      2D7Bh
+        DB      07h
+        DB      " {-{-"
 
         ; Entry Point
         ; --- START PROC L2007 ---
@@ -871,8 +865,7 @@ L244F:  INC     E
         LD      H,(IX+05h)
         ; --- START PROC L245B ---
 L245B:  LD      A,(HL)
-        ;AND     0Fh ; BEWARE! trick here,
-        DB      E6h  ;   code is AND 0F, ADD A,B if entered through 245B, else RRCA if entered through 245D
+        AND     0Fh
         ; --- START PROC L245D ---
 L245D:  RRCA
         ADD     A,B
@@ -2538,143 +2531,117 @@ L2B5B:  DB      6Bh             ; 'k'
         DB      2Bh             ; '+'
         DB      0E0h
         DB      2Bh             ; '+'
-        DB      0EBh
-        DB      11h
-        DB      00h
-        DB      73h             ; 's'
-        DB      01h
-        DB      08h
-        DB      00h
-        DB      0EDh
-        DB      0B0h
-        DB      0C9h
-        DB      0Eh
-        DB      08h
-        DB      21h             ; '!'
-        DB      00h
-        DB      73h             ; 's'
-        DB      1Ah
-        DB      06h
-        DB      08h
-        DB      0Fh
-        DB      0CBh
-        DB      16h
-        DB      23h             ; '#'
-        DB      10h
-        DB      0FAh
-        DB      13h
-        DB      0Dh
-        DB      20h             ; ' '
-        DB      0F0h
-        DB      0C9h
-        DB      0Eh
-        DB      08h
-        DB      21h             ; '!'
-        DB      07h
-        DB      73h             ; 's'
-        DB      1Ah
-        DB      06h
-        DB      08h
-        DB      07h
-        DB      0CBh
-        DB      1Eh
-        DB      10h
-        DB      0FBh
-        DB      13h
-        DB      2Bh             ; '+'
-        DB      0Dh
-        DB      20h             ; ' '
-        DB      0F3h
-        DB      0C9h
-        DB      0Eh
-        DB      08h
-        DB      21h             ; '!'
-        DB      00h
-        DB      73h             ; 's'
-        DB      1Ah
-        DB      06h
-        DB      08h
-        DB      07h
-        DB      0CBh
-        DB      1Eh
-        DB      23h             ; '#'
-        DB      10h
-        DB      0FAh
-        DB      13h
-        DB      0Dh
-        DB      20h             ; ' '
-        DB      0F0h
-        DB      0C9h
-        DB      0Eh
-        DB      08h
-        DB      21h             ; '!'
-        DB      00h
-        DB      73h             ; 's'
-        DB      1Ah
-        DB      06h
-        DB      08h
-        DB      07h
-        DB      0CBh
-        DB      1Eh
-        DB      10h
-        DB      0FBh
-        DB      23h             ; '#'
-        DB      13h
-        DB      0Dh
-        DB      20h             ; ' '
-        DB      0F3h
-        DB      0C9h
-        DB      06h
-        DB      08h
-        DB      21h             ; '!'
-        DB      07h
-        DB      73h             ; 's'
-        DB      1Ah
-        DB      77h             ; 'w'
-        DB      2Bh             ; '+'
-        DB      13h
-        DB      10h
-        DB      0FAh
-        DB      0C9h
-        DB      0Eh
-        DB      08h
-        DB      21h             ; '!'
-        DB      00h
-        DB      73h             ; 's'
-        DB      1Ah
-        DB      06h
-        DB      08h
-        DB      0Fh
-        DB      0CBh
-        DB      1Eh
-        DB      23h             ; '#'
-        DB      10h
-        DB      0FAh
-        DB      13h
-        DB      0Dh
-        DB      20h             ; ' '
-        DB      0F0h
-        DB      0C9h
-        DB      0Eh
-        DB      08h
-        DB      21h             ; '!'
-        DB      00h
-        DB      73h             ; 's'
-        DB      1Ah
-        DB      06h
-        DB      08h
-        DB      07h
-        DB      0CBh
-        DB      16h
-        DB      23h             ; '#'
-        DB      10h
-        DB      0FAh
-        DB      13h
-        DB      0Dh
-        DB      20h             ; ' '
-        DB      0F0h
-        DB      0C9h
-        DB      40h             ; '@'
+
+        ; Entry Point
+        ; --- START PROC L2B6B ---
+L2B6B:  EX      DE,HL
+        LD      DE,7300h
+        LD      BC,0008h
+        LDIR
+        RET
+
+        ; Entry Point
+        ; --- START PROC L2B75 ---
+L2B75:  LD      C,08h
+L2B77:  LD      HL,7300h
+        LD      A,(DE)
+        LD      B,08h
+L2B7D:  RRCA
+        RL      (HL)
+        INC     HL
+        DJNZ    L2B7D
+        INC     DE
+        DEC     C
+        JR      NZ,L2B77
+        RET
+
+        ; Entry Point
+        ; --- START PROC L2B88 ---
+L2B88:  LD      C,08h
+        LD      HL,7307h
+L2B8D:  LD      A,(DE)
+        LD      B,08h
+L2B90:  RLCA
+        RR      (HL)
+        DJNZ    L2B90
+        INC     DE
+        DEC     HL
+        DEC     C
+        JR      NZ,L2B8D
+        RET
+
+        ; Entry Point
+        ; --- START PROC L2B9B ---
+L2B9B:  LD      C,08h
+L2B9D:  LD      HL,7300h
+        LD      A,(DE)
+        LD      B,08h
+L2BA3:  RLCA
+        RR      (HL)
+        INC     HL
+        DJNZ    L2BA3
+        INC     DE
+        DEC     C
+        JR      NZ,L2B9D
+        RET
+
+        ; Entry Point
+        ; --- START PROC L2BAE ---
+L2BAE:  LD      C,08h
+        LD      HL,7300h
+L2BB3:  LD      A,(DE)
+        LD      B,08h
+L2BB6:  RLCA
+        RR      (HL)
+        DJNZ    L2BB6
+        INC     HL
+        INC     DE
+        DEC     C
+        JR      NZ,L2BB3
+        RET
+
+        ; Entry Point
+        ; --- START PROC L2BC1 ---
+L2BC1:  LD      B,08h
+        LD      HL,7307h
+L2BC6:  LD      A,(DE)
+        LD      (HL),A
+        DEC     HL
+        INC     DE
+        DJNZ    L2BC6
+        RET
+
+        ; Entry Point
+        ; --- START PROC L2BCD ---
+L2BCD:  LD      C,08h
+L2BCF:  LD      HL,7300h
+        LD      A,(DE)
+        LD      B,08h
+L2BD5:  RRCA
+        RR      (HL)
+        INC     HL
+        DJNZ    L2BD5
+        INC     DE
+        DEC     C
+        JR      NZ,L2BCF
+        RET
+
+        ; Entry Point
+        ; --- START PROC L2BE0 ---
+L2BE0:  LD      C,08h
+L2BE2:  LD      HL,7300h
+        LD      A,(DE)
+        LD      B,08h
+L2BE8:  RLCA
+        RL      (HL)
+        INC     HL
+        DJNZ    L2BE8
+        INC     DE
+        DEC     C
+        JR      NZ,L2BE2
+        RET
+
+L2BF3:  DB      40h             ; '@'
         DB      48h             ; 'H'
         DB      45h             ; 'E'
         DB      4Dh             ; 'M'
@@ -3691,10 +3658,7 @@ L30D4:  CALL    L3DFB
         INC     A
         RET
 
-L30D9:  DB      48h             ; 'H'
-        DB      49h             ; 'I'
-        DB      47h             ; 'G'
-        DB      48h             ; 'H'
+L30D9:  DB      "HIGH"
         DB      00h
         DB      "SCORE"
         DB      00h
