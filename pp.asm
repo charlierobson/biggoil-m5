@@ -1,9 +1,15 @@
-
+.define DB .db
+.define DW .dw
+.define ORG .org
+;
+; assembles to byte exact copy of PowerPac (PAL) rom.
+;
         ORG     2000h
 
         DB      02h
-        DB      07h
-        DB      " {-{-"
+        DW      2007h
+        DW      2D7Bh
+        DW      2D7Bh
 
         ; Entry Point
         ; --- START PROC L2007 ---
@@ -865,7 +871,8 @@ L244F:  INC     E
         LD      H,(IX+05h)
         ; --- START PROC L245B ---
 L245B:  LD      A,(HL)
-        AND     0Fh
+        ;AND     0Fh ; BEWARE! trick here,
+        DB      E6h  ;   code is AND 0F, ADD A,B if entered through 245B, else RRCA if entered through 245D
         ; --- START PROC L245D ---
 L245D:  RRCA
         ADD     A,B
