@@ -246,5 +246,4 @@ seg_bss:
 	.var	byte, lx
 	.var	word, rndseed
 	.var	byte, psound
-	.var	byte, frames2
 	.var	byte[ENEMYSIZE*NENEMIES], enemydata

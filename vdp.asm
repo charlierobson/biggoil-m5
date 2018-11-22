@@ -51,46 +51,18 @@ COL_WHITE    .equ $0F
 initVDP:
     ; set graphic 1 mode, bg col, vram layout.
 
-    ld      b,0
-    ld      hl,graphic1data
+    ld      hl,graphic1data             ; pairs of bytes representing a vdp register value and register number with bit 7 set
+    ld      de,$7010                    ; copy to ram to modify PAL/NTSC bit (reg 0, bit 0)
+    push    de
+    ld      bc,16
+    ldir
+    ld      a,($0f)                     ; PAL ROM contains F3 at this address, NTSC ROM contains F6
+    and     1
+    ld      ($7010),a                   ; PAL/!NTSC
 
--:  ld      a,(hl)
-    inc     hl
-    out     (VDP_REG),a                 ; write data
-    ld      a,b
-    or      $80
-    out     (VDP_REG),a                 ; write reg number
-
-+:  inc     b
-    ld      a,b
-    cp      $08
-    jr      nz,{-}
-
-    ; set up the inital pattern table
-
-    ld      hl,PATTBL
-    call    setVDPAddress
-
-    ld      hl,zx81font
-    ld      bc,128*8
--:  ld      a,(hl)
-    out     (VDP_DATA),a
-    inc     hl
-    dec     bc
-    ld      a,b
-    or      c
-    jr      nz,{-}
-
-    ld      hl,zx81font
-    ld      bc,128*8
--:  ld      a,(hl)
-    xor     $ff
-    out     (VDP_DATA),a
-    inc     hl
-    dec     bc
-    ld      a,b
-    or      c
-    jr      nz,{-}
+    pop     hl                          ; data to OUT
+    ld      bc,$1011                    ; 16 bytes to port $11
+    otir
 
     ; set up the initial colour table
 
@@ -101,12 +73,32 @@ initVDP:
     ld      b,$20
 -:  out     (VDP_DATA),a
     djnz    {-}
+    
+    ; set up the inital pattern table
+
+    ld      hl,PATTBL
+    call    setVDPAddress
+
+    ld      hl,zx81font
+    ld      e,$00
+    call    {+}
+    ld      e,$ff
++:  ld      hl,zx81font
+    ld      bc,128*8
+-:  ld      a,(hl)
+    xor     e
+    out     (VDP_DATA),a
+    inc     hl
+    dec     bc
+    ld      a,b
+    or      c
+    jr      nz,{-}
 
     ret
 
 
 graphic1data:
-    .db     $01,$e0,$05,$80,$01,$20,$00,COL_WHITE
+    .db     $01,$80,$e0,$81,$05,$82,$80,$83,$01,$84,$20,$85,$00,$86,COL_WHITE,$87
 
 
 ; set vdp write address
@@ -141,14 +133,10 @@ waitFrames:
     djnz    waitFrames
 
 waitVSync:
-    ld      hl,frames2
+    ld      hl,frames
     ld      a,(hl)
 -:  cp      (hl)
     jr      z,{-}
-
-    ld      a,(frames)
-    dec     a
-    ld      (frames),a
     ret
 
 
@@ -227,24 +215,13 @@ invertScreen:
 
 
 
-showScreen:
-    push    hl
-    ld      hl,NAMETBL
-    call    setVDPAddress
-    pop     hl
-
-    ld      bc,VDP_DATA
-    otir
-    otir
-    otir
-
-    ret
-
-
-
-
 framesync:
     call    waitVSync
+
+    ld      a,COL_DRED
+    out     (VDP_REG),a
+    ld      a,$87
+    out     (VDP_REG),a
 
     ld      hl,NAMETBL
     call    setVDPAddress
@@ -257,5 +234,10 @@ framesync:
     inc     hl
     ld      b,e
     djnz    {-}
+
+    ld      a,COL_BLACK
+    out     (VDP_REG),a
+    ld      a,$87
+    out     (VDP_REG),a
 
     ret

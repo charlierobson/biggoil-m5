@@ -44,7 +44,18 @@ restart:
 	ld		(playerhit),a
 
 mainloop:
+	ld		a,COL_BLACK
+	out		(VDP_REG),a
+	ld		a,$87
+	out		(VDP_REG),a
+
 	call	framesync
+
+	ld		a,COL_CYAN
+	out		(VDP_REG),a
+	ld		a,$87
+	out		(VDP_REG),a
+
 	call	readinput
 
 	ld		a,(fire)				; if fire button has just been released then reset the retract tone

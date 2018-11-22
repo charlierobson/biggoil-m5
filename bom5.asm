@@ -20,18 +20,17 @@ vbl:
 
     in      a,(VDP_STAT)
 
-    ld      a,(frames2)
+    ld      a,(frames)
     inc     a
-    ld      (frames2),a
+    ld      (frames),a
 
-    out     (VDP_REG),a
-
-    ld      a,$87
-    out     (VDP_REG),a
+;;  out     (VDP_REG),a
+;;  ld      a,$87
+;;  out     (VDP_REG),a
 
     ex      af,af'
     ei
-    ret
+    reti
 
 
 start:
@@ -40,20 +39,13 @@ start:
 
 	ld		sp,$7fff
 
-    ld      a,$00                   ; Disable timer interrupt
-    out     ($00),a
-    ld      a,$01
+    ld      a,$01                   ; disable timer interrupts
     out     ($01),a
 
     call    initmem
     call    initVDP
 
 	call	seedrnd
-
-    ld      hl,clrirq
-    ld      ($7000),hl
-    ld      ($7002),hl
-    ld      ($7004),hl
 
     ld      hl,vbl
     ld      ($7006),hl
