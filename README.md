@@ -3,7 +3,7 @@ BiggOil for Sord M5
 
 ### TODO
 
-* joystick button inputs
+* ~~joystick button inputs~~
 * sfx
 * music
 * refactor display code, remove NLs

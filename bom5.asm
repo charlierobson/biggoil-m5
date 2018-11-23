@@ -16,19 +16,16 @@ clrirq:
     reti
 
 vbl:
-    ex      af,af'
-
+    exx
     in      a,(VDP_STAT)
 
     ld      a,(frames)
     inc     a
     ld      (frames),a
 
-;;  out     (VDP_REG),a
-;;  ld      a,$87
-;;  out     (VDP_REG),a
+    call    AYFX.FRAME
 
-    ex      af,af'
+    exx
     ei
     reti
 
@@ -44,6 +41,7 @@ start:
 
     call    initmem
     call    initVDP
+    call    initsfx
 
 	call	seedrnd
 
@@ -80,7 +78,8 @@ start:
 #include "input.asm"
 #include "vdp.asm"
 #include "stcplay.asm"
-#include "ayfxplay.asm"
+#include "ayfxcustom.asm"
+#include "ayfxplaySN.asm"
 
 #include "font.asm"
 

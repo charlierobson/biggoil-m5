@@ -247,3 +247,15 @@ seg_bss:
 	.var	byte, headchar
 	.var	byte, fuelchar
 	.var	byte[ENEMYSIZE*NENEMIES], enemydata
+	.var	byte[7*3], afxChDesc
+	.var	word, afxBnkAdr
+	.var	byte, curvolCHN
+
+
+;AYFX_RAM	 
+; channels descriptors, 7 bytes per channel
+; +0 (2) current addr. (channel is free, if MSB==#00)
+; +2 (2) current play time
+; +4 (1) sfx volume
+; +5 (2) tone divider
+; ...

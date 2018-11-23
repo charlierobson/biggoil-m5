@@ -49,12 +49,16 @@ _ilop:
 _noflash:
 	call	readtitleinput
 
-	ld		a,(redef)				; redefine when r released
+	ld		a,(redef)
 	and		3
-	cp		2
-	call	z,redefinekeys
+	cp		1
+	jr		nz,{+}
 
-	ld		a,(begin)
+	call	redefinekeys			; redefine keys and copy any altered fire/start key
+	ld		hl,(fire-3)
+	ld		(begin-3),hl
+
++:	ld		a,(begin)
 	and		3
 	cp		1
 	ret		z

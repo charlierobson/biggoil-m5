@@ -47,7 +47,7 @@ generateenemy:
 
 startenemy:
 	ld		a,3
-	call	AFXPLAY
+	call	AYFX.PLAY
 
 	xor		a
 	ld		de,ENEMYSIZE
@@ -194,7 +194,7 @@ _testhit:
 
 	ld		(playerhit),a			; signal life lost
 	ld		a,7
-	call	AFXPLAY
+	call	AYFX.PLAY
 
 _eupd:
 	ld		(iy+EO_ADL),l			; store updated position
@@ -216,7 +216,7 @@ _ediedwithscore:
 	add		a,2
 	ld		(scoretoadd),a
 	ld		a,14
-	call	AFXPLAY
+	call	AYFX.PLAY
 
 _edied:
 	dec		(iy)

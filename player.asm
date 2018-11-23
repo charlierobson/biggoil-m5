@@ -93,7 +93,7 @@ _intothevoid:
 	res		2,h
 
 	ld		a,(psound)
-	call	AFXPLAY
+	call	AYFX.PLAY
 
 	xor		a
 	ret

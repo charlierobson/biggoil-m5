@@ -169,7 +169,7 @@ _headupdate:
 
 nextlevel:
 	ld		a,12
-	call	AFXPLAY
+	call	AYFX.PLAY
 
 	call	tidyup
 	call	levelup
@@ -219,7 +219,7 @@ loselife:
 	jr		nz,{+}
 
 	ld		a,13
-	call	AFXPLAY
+	call	AYFX.PLAY
 
 +:	call	tidyup
 	ld		a,(lives)
