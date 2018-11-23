@@ -219,9 +219,7 @@ framesync:
     call    waitVSync
 
     ld      a,COL_DRED
-    out     (VDP_REG),a
-    ld      a,$87
-    out     (VDP_REG),a
+    call    setborder
 
     ld      hl,NAMETBL
     call    setVDPAddress
@@ -236,8 +234,11 @@ framesync:
     djnz    {-}
 
     ld      a,COL_BLACK
-    out     (VDP_REG),a
-    ld      a,$87
-    out     (VDP_REG),a
 
+    ; fall in to ..
+
+setborder:
+	out		(VDP_REG),a
+	ld		a,$87
+	out		(VDP_REG),a
     ret

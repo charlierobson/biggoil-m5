@@ -29,7 +29,8 @@ readtitleinput:
 	call	_rib
 	ld		hl,titleinputstates
 	call	updateinputstate ; (begin)
-	jp		updateinputstate ; (redefine)
+	call	updateinputstate ; (redefine)
+	jp		updateinputstate ; (jsfire)
 
 
 readinput:
@@ -38,6 +39,7 @@ readinput:
 	call	updateinputstate ; (up)
 	call	updateinputstate ; (down)
 	call	updateinputstate ;  etc.
+	call	updateinputstate ;
 	call	updateinputstate ;
 
 	; fall into here for last input

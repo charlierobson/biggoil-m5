@@ -7,6 +7,12 @@ game:
 	ld		a,4
 	ld		(lives),a
 
+	ld		a,PIPE_HEAD1
+	ld		(headchar),a
+
+	ld		a,FUEL1
+	ld		(fuelchar),a
+
 	ld		a,DOWN
 	ld		(retractqueue-1),a
 
@@ -45,16 +51,12 @@ restart:
 
 mainloop:
 	ld		a,COL_BLACK
-	out		(VDP_REG),a
-	ld		a,$87
-	out		(VDP_REG),a
+	call	setborder
 
 	call	framesync
 
 	ld		a,COL_CYAN
-	out		(VDP_REG),a
-	ld		a,$87
-	out		(VDP_REG),a
+	call	setborder
 
 	call	readinput
 
@@ -116,7 +118,7 @@ _noretract:
 	ld		a,(frames)				; only dig every nth frame
 	and		3						; could be game speed controller?
 	cp		3
-	jr		nz,mainloop
+	jp		nz,mainloop
 
 	ld		a,(headchar)			; animate the digging head
 	xor		PIPE_HEAD1 ^ PIPE_HEAD2

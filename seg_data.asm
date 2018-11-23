@@ -144,30 +144,28 @@ seg_data:
 titleinputstates:
 	.byte	$30,%01000000,%00000000,0		; startgame	(SP)
 	.byte	$32,%00001000,%00000000,0		; redefine	(R)
+	.byte	$31,%00000001,%00000000,0		; redefine	(R)
 
 gameinputstates:
-	.byte	$30,%01000000,%00000000,0		; fire	(SP)
-	.byte	$32,%00000001,%00000010,0		; up	(Q)
-	.byte	$33,%00000001,%00001000,0		; down	(A)
-	.byte	$36,%00000001,%00000100,0		; left	(O)
-	.byte	$36,%00000010,%00000001,0		; right	(P)
+	.byte	$30,%01000000,%00000000,0		; fire	    (SP)
+	.byte	$32,%00000001,%00000010,0		; up	    (Q)
+	.byte	$33,%00000001,%00001000,0		; down	    (A)
+	.byte	$36,%00000001,%00000100,0		; left	    (O)
+	.byte	$36,%00000010,%00000001,0		; right	    (P)
+	.byte	$31,%00000001,%00000000,0		; jsfire    (1)
 
 ; calculate actual input impulse addresses
 ;
 begin	= titleinputstates + 3
 redef	= titleinputstates + 7
+jsbegin	= titleinputstates + 11
+
 fire	= gameinputstates + 3
 up		= gameinputstates + 7
 down	= gameinputstates + 11
 left	= gameinputstates + 15
 right	= gameinputstates + 19
-
-headchar:
-	.byte   PIPE_HEAD1
-
-fuelchar:
-	.byte   FUEL1
-
+jsfire	= gameinputstates + 23
 
 newtone:
 newtonep1=newtone+1
@@ -246,4 +244,6 @@ seg_bss:
 	.var	byte, lx
 	.var	word, rndseed
 	.var	byte, psound
+	.var	byte, headchar
+	.var	byte, fuelchar
 	.var	byte[ENEMYSIZE*NENEMIES], enemydata
