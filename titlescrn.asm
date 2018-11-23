@@ -47,15 +47,21 @@ _ilop:
 	djnz		_ilop
 
 _noflash:
-	call		readtitleinput
+	call	readtitleinput
 
-	ld		  a,(redef)				; redefine when r released
-	and		 3
-	cp		  2
-	call		z,redefinekeys
+	ld		a,(redef)				; redefine when r released
+	and		3
+	cp		2
+	call	z,redefinekeys
 
-	ld		  a,(begin)
-	and		 3
-	cp		  1
-	jr		  nz,_titleloop
+	ld		a,(begin)
+	and		3
+	cp		1
+	ret		z
+
+	ld		a,(jsbegin)
+	and		3
+	cp		1
+	jr		nz,_titleloop
+
 	ret

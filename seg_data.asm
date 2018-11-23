@@ -144,7 +144,7 @@ seg_data:
 titleinputstates:
 	.byte	$30,%01000000,%00000000,0		; startgame	(SP)
 	.byte	$32,%00001000,%00000000,0		; redefine	(R)
-	.byte	$31,%00000001,%00000000,0		; redefine	(R)
+	.byte	$31,%00000001,%00000000,0		; jscegin	(1)
 
 gameinputstates:
 	.byte	$30,%01000000,%00000000,0		; fire	    (SP)
