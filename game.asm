@@ -61,6 +61,9 @@ mainloop:
 	call	readinput
 
 	ld		a,(fire)				; if fire button has just been released then reset the retract tone
+	ld		b,a
+	ld		a,(jsfire)
+	or		b
 	and		3
 	cp		2
 	call	z,resettone
@@ -90,6 +93,9 @@ _die:
 
 _playon:
 	ld		a,(fire)				; retract happens quickly so check every frame
+	ld		b,a
+	ld		a,(jsfire)
+	or		b
 	and		1
 	jr		z,_noretract
 

@@ -11,3 +11,4 @@ BiggOil for Sord M5
 * pipe chars -> contiguous in charset
 * enemies -> sprites?
 * remove dfile?
+* editor for arbitrary character sets ala p5-sketchy?
