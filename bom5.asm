@@ -16,7 +16,7 @@ clrirq:
     reti
 
 vbl:
-    exx
+    ex      af,af'
     in      a,(VDP_STAT)
 
     ld      a,(frames)
@@ -25,15 +25,14 @@ vbl:
 
 ;    call    AYFX.FRAME
 
-    exx
+    ex      af,af'
     ei
     reti
 
 
+
 start:
     di
-    call    clrirq                  ; release irq
-
 	ld		sp,$7fff
 
     ld      a,$01                   ; disable timer interrupts
@@ -48,6 +47,7 @@ start:
     ld      hl,vbl
     ld      ($7006),hl
 
+    call    clrirq                  ; release irq
     ei
 
 -:	call	titlescn

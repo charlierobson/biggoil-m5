@@ -50,19 +50,46 @@ COL_WHITE    .equ $0F
 
 initVDP:  ;  set graphic 1 mode, bg col, vram layout.
 
-    ; clear VRAM
+    ; disable display so that vram accesses aren't speed limited
+
+    ld      a,$80               ; bit 6 (enable display) is clear
+    out     (VDP_REG),a
+    ld      a,$81
+    out     (VDP_REG),a
+
+    ; clear VRAM to 0
 
     ld      hl,0
     call    setVDPAddress
-    xor     a
     ld      e,$40
     ld      b,0
+    xor     a
 -:  out     (VDP_DATA),a
     djnz    {-}
     dec     e
     jr      nz,{-}
 
-    ; init display mode
+    ; set up the colour table
+
+    ld      hl,COLTBL
+    call    setVDPAddress
+
+    ld      a,(COL_BLACK<<4)+COL_WHITE
+    ld      b,$20
+-:  out     (VDP_DATA),a
+    djnz    {-}
+
+    ; set up the pattern table
+
+    ld      hl,PATTBL
+    call    setVDPAddress
+
+    ld      e,$00
+    call    sendFontData
+    ld      e,$ff
+    call    sendFontData
+
+    ; finally init display mode
 
     ld      hl,graphic1data             ; pairs of bytes representing a vdp register value and register number with bit 7 set
     ld      de,$7010                    ; copy to ram to modify PAL/NTSC bit (reg 0, bit 0)
@@ -77,26 +104,11 @@ initVDP:  ;  set graphic 1 mode, bg col, vram layout.
     ld      bc,$1011                    ; 16 bytes to port $11
     otir
 
-    ; set up the colour table
+    ret
 
-    ld      hl,COLTBL
-    call    setVDPAddress
 
-    ld      a,(COL_BLACK<<4)+COL_WHITE
-    ld      b,$20
--:  out     (VDP_DATA),a
-    djnz    {-}
-    
-    ; set up the pattern table
-
-    ld      hl,PATTBL
-    call    setVDPAddress
-
+sendFontData:
     ld      hl,zx81font
-    ld      e,$00
-    call    {+}
-    ld      e,$ff
-+:  ld      hl,zx81font
     ld      bc,128*8
 -:  ld      a,(hl)
     xor     e
@@ -106,7 +118,6 @@ initVDP:  ;  set graphic 1 mode, bg col, vram layout.
     ld      a,b
     or      c
     jr      nz,{-}
-
     ret
 
 
@@ -251,7 +262,10 @@ framesync:
     ; fall in to ..
 
 setborder:
+    ret
+
 	out		(VDP_REG),a
 	ld		a,$87
 	out		(VDP_REG),a
+
     ret
