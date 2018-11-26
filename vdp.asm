@@ -48,8 +48,21 @@ COL_LYELLOW  .equ $0B
 COL_GREY     .equ $0E
 COL_WHITE    .equ $0F
 
-initVDP:
-    ; set graphic 1 mode, bg col, vram layout.
+initVDP:  ;  set graphic 1 mode, bg col, vram layout.
+
+    ; clear VRAM
+
+    ld      hl,0
+    call    setVDPAddress
+    xor     a
+    ld      e,$40
+    ld      b,0
+-:  out     (VDP_DATA),a
+    djnz    {-}
+    dec     e
+    jr      nz,{-}
+
+    ; init display mode
 
     ld      hl,graphic1data             ; pairs of bytes representing a vdp register value and register number with bit 7 set
     ld      de,$7010                    ; copy to ram to modify PAL/NTSC bit (reg 0, bit 0)
@@ -64,7 +77,7 @@ initVDP:
     ld      bc,$1011                    ; 16 bytes to port $11
     otir
 
-    ; set up the initial colour table
+    ; set up the colour table
 
     ld      hl,COLTBL
     call    setVDPAddress
@@ -74,7 +87,7 @@ initVDP:
 -:  out     (VDP_DATA),a
     djnz    {-}
     
-    ; set up the inital pattern table
+    ; set up the pattern table
 
     ld      hl,PATTBL
     call    setVDPAddress
@@ -98,7 +111,7 @@ initVDP:
 
 
 graphic1data:
-    .db     $01,$80,$e0,$81,$05,$82,$80,$83,$01,$84,$20,$85,$00,$86,COL_WHITE,$87
+    .db     $01,$80,$e0,$81,$05,$82,$80,$83,$01,$84,$20,$85,$00,$86,(COL_BLACK<<4)+COL_WHITE,$87
 
 
 ; set vdp write address

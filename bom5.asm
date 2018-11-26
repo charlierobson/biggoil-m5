@@ -23,7 +23,7 @@ vbl:
     inc     a
     ld      (frames),a
 
-    call    AYFX.FRAME
+;    call    AYFX.FRAME
 
     exx
     ei
