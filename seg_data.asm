@@ -74,8 +74,10 @@ leveldata:
 
 	.align 16
 enemyanims:
-	.byte   $10,$13     ;ENEMY,ENEMY|128 ; enemyanim0
-	.byte   $11,$12     ;ENEMY-1,ENEMY-1|128 ; enemyanim1 etc
+;	.byte   $10,$13     ; (<
+;	.byte   $11,$12     ; >)
+	.byte   $0c,$8c     ; £
+	.byte   $0c,$8c     ; £
 
 
 
@@ -148,10 +150,10 @@ titleinputstates:
 
 gameinputstates:
 	.byte	$30,%01000000,%00000000,0		; fire	    (SP)
-	.byte	$32,%00000001,%00000010,0		; up	    (Q)
-	.byte	$33,%00000001,%00001000,0		; down	    (A)
-	.byte	$36,%00000001,%00000100,0		; left	    (O)
-	.byte	$36,%00000010,%00000001,0		; right	    (P)
+	.byte	$36,%00000100,%00000010,0		; up	    (@)
+	.byte	$35,%00100000,%00001000,0		; down	    (/)
+	.byte	$36,%00100000,%00000100,0		; left	    (;)
+	.byte	$36,%01000000,%00000001,0		; right	    (:)
 	.byte	$31,%00000001,%00000000,0		; jsfire    (1)
 
 ; calculate actual input impulse addresses

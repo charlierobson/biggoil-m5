@@ -24,10 +24,11 @@ _titleloop:
 	jr		nz,_nochangetext
 
 	ld		hl,_tt1
-	ld		a,(frames)
-	and		128
-	jr		nz,{+}
-	ld		hl,_tt2
+	;; todo - fix redefining on real hardware
+	;;ld		a,(frames)
+	;;and		128
+	;;jr		nz,{+}
+	;;ld		hl,_tt2
 +:  ld		de,dfile+$303
 	ld		bc,10
 	ldir
@@ -54,7 +55,8 @@ _noflash:
 	cp		1
 	jr		nz,{+}
 
-	call	redefinekeys			; redefine keys and copy any altered fire/start key
+	;; todo - fix redefining
+	;;call	redefinekeys			; redefine keys and copy any altered fire/start key
 	ld		hl,(fire-3)
 	ld		(begin-3),hl
 
