@@ -24,11 +24,10 @@ _titleloop:
 	jr		nz,_nochangetext
 
 	ld		hl,_tt1
-	;; todo - fix redefining on real hardware
-	;;ld		a,(frames)
-	;;and		128
-	;;jr		nz,{+}
-	;;ld		hl,_tt2
+	ld		a,(frames)
+	and		128
+	jr		nz,{+}
+	ld		hl,_tt2
 +:  ld		de,dfile+$303
 	ld		bc,10
 	ldir
@@ -45,7 +44,7 @@ _ilop:
 	xor		 $80
 	ld		  (hl),a
 	inc		 hl
-	djnz		_ilop
+	djnz	_ilop
 
 _noflash:
 	call	readtitleinput
@@ -55,8 +54,7 @@ _noflash:
 	cp		1
 	jr		nz,{+}
 
-	;; todo - fix redefining
-	;;call	redefinekeys			; redefine keys and copy any altered fire/start key
+	call	redefinekeys			; redefine keys and copy any altered fire/start key
 	ld		hl,(fire-3)
 	ld		(begin-3),hl
 

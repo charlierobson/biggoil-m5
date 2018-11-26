@@ -12,12 +12,9 @@
 ipl:
     ret
 
-clrirq:
-    reti
 
 vbl:
-    exx
-    in      a,(VDP_STAT)
+    ex      af,af'
 
     ld      a,(frames)
     inc     a
@@ -25,8 +22,11 @@ vbl:
 
 ;    call    AYFX.FRAME
 
-    exx
+    in      a,(VDP_STAT)
+    ex      af,af'
     ei
+
+clrirq:
     reti
 
 

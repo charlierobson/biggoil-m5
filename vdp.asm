@@ -50,17 +50,39 @@ COL_WHITE    .equ $0F
 
 initVDP:  ;  set graphic 1 mode, bg col, vram layout.
 
+    call    displayOff
+
     ; clear VRAM
 
     ld      hl,0
     call    setVDPAddress
-    xor     a
     ld      e,$40
     ld      b,0
+    xor     a
 -:  out     (VDP_DATA),a
     djnz    {-}
     dec     e
     jr      nz,{-}
+
+    ; set up the colour table
+
+    ld      hl,COLTBL
+    call    setVDPAddress
+
+    ld      a,(COL_BLACK<<4)+COL_WHITE
+    ld      b,$20
+-:  out     (VDP_DATA),a
+    djnz    {-}
+
+    ; set up the pattern table
+
+    ld      hl,PATTBL
+    call    setVDPAddress
+
+    ld      e,$00
+    call    writeFont
+    ld      e,$ff
+    call    writeFont
 
     ; init display mode
 
@@ -76,27 +98,26 @@ initVDP:  ;  set graphic 1 mode, bg col, vram layout.
     pop     hl                          ; data to OUT
     ld      bc,$1011                    ; 16 bytes to port $11
     otir
+    ret
 
-    ; set up the colour table
 
-    ld      hl,COLTBL
-    call    setVDPAddress
+displayOff:
+    ld      a,$80
+    out     (VDP_REG),a
+    ld      a,$81
+    out     (VDP_REG),a
+    ret
 
-    ld      a,(COL_BLACK<<4)+COL_WHITE
-    ld      b,$20
--:  out     (VDP_DATA),a
-    djnz    {-}
-    
-    ; set up the pattern table
+displayOn:
+    ld      a,$e0
+    out     (VDP_REG),a
+    ld      a,$81
+    out     (VDP_REG),a
+    ret
 
-    ld      hl,PATTBL
-    call    setVDPAddress
 
+writeFont:
     ld      hl,zx81font
-    ld      e,$00
-    call    {+}
-    ld      e,$ff
-+:  ld      hl,zx81font
     ld      bc,128*8
 -:  ld      a,(hl)
     xor     e
@@ -106,7 +127,6 @@ initVDP:  ;  set graphic 1 mode, bg col, vram layout.
     ld      a,b
     or      c
     jr      nz,{-}
-
     ret
 
 
@@ -154,6 +174,9 @@ waitVSync:
 
 
 cls:
+    di
+    call    displayOff
+
     ld      hl,NAMETBL
     call    setVDPAddress
 
@@ -165,6 +188,8 @@ cls:
     dec     c
     jr      nz,{-}
 
+    call    displayOn
+    ei
     ret
 
 
