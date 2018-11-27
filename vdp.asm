@@ -50,14 +50,9 @@ COL_WHITE    .equ $0F
 
 initVDP:  ;  set graphic 1 mode, bg col, vram layout.
 
-    ; disable display so that vram accesses aren't speed limited
+    call    displayOff
 
-    ld      a,$80               ; bit 6 (enable display) is clear
-    out     (VDP_REG),a
-    ld      a,$81
-    out     (VDP_REG),a
-
-    ; clear VRAM to 0
+    ; clear VRAM
 
     ld      hl,0
     call    setVDPAddress
@@ -85,11 +80,11 @@ initVDP:  ;  set graphic 1 mode, bg col, vram layout.
     call    setVDPAddress
 
     ld      e,$00
-    call    sendFontData
+    call    writeFont
     ld      e,$ff
-    call    sendFontData
+    call    writeFont
 
-    ; finally init display mode
+    ; init display mode
 
     ld      hl,graphic1data             ; pairs of bytes representing a vdp register value and register number with bit 7 set
     ld      de,$7010                    ; copy to ram to modify PAL/NTSC bit (reg 0, bit 0)
@@ -103,11 +98,25 @@ initVDP:  ;  set graphic 1 mode, bg col, vram layout.
     pop     hl                          ; data to OUT
     ld      bc,$1011                    ; 16 bytes to port $11
     otir
-
     ret
 
 
-sendFontData:
+displayOff:
+    ld      a,$80
+    out     (VDP_REG),a
+    ld      a,$81
+    out     (VDP_REG),a
+    ret
+
+displayOn:
+    ld      a,$e0
+    out     (VDP_REG),a
+    ld      a,$81
+    out     (VDP_REG),a
+    ret
+
+
+writeFont:
     ld      hl,zx81font
     ld      bc,128*8
 -:  ld      a,(hl)
@@ -165,6 +174,9 @@ waitVSync:
 
 
 cls:
+    di
+    call    displayOff
+
     ld      hl,NAMETBL
     call    setVDPAddress
 
@@ -176,6 +188,8 @@ cls:
     dec     c
     jr      nz,{-}
 
+    call    displayOn
+    ei
     ret
 
 

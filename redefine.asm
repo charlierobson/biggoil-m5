@@ -118,7 +118,7 @@ _redeffit:
     call    textOut
 
 _redefloop:
-	call	_getcolbit
+	call	_getcolbitDebounced
 	jr		z,_redefloop
 
 	ld		hl,(keyaddress)
@@ -153,6 +153,37 @@ _getcolbit:
 	djnz	{-}
 
     and     a
+	ret
+
+
+_getcolbitDebounced:
+	ld		bc,$0730				; b is loop count, c is io address
+
+-:	in      a,(c)                   ; byte will have a 1 bit if a key is pressed
+	jr		nz,_dbit
+
+	inc		c
+	djnz	{-}
+  	and     a
+	ret
+
+_dbit:
+	ld		b,a						; stash the bit we're looking for
+	ld		e,10					; start a timer
+
+-:	call	waitVSync
+	in		a,(c)
+	cp		b
+	jr		nz,_dbnope				; nope, released too soon or glitchy
+
+	dec		e
+	jr		nz,{-}
+
+	and		a						; we hit required time so ok
+	ret
+
+_dbnope:
+	xor		a
 	ret
 
 

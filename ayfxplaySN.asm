@@ -58,14 +58,9 @@
 ; noise (byte)	[xxxxxwnn]	     	(only if n=1) w=1 whitenoise
 
 
-SG = $20
-SG1 = $21
-
-
-_CHAN_ADDR:		.equ	0	; +0 (2) current addr. (channel is free, if MSB==$00)
-_CHAN_TIME:		.equ	2	; +2 (2) current play time
-_CHAN_VOL:		.equ	4	; +4 (1) sfx volume
-_CHAN_DIV:		.equ	5	; +5 (2) tone divider
+_CHAN_ADDR:		.equ	0	;(W) current addr. (channel is free, if MSB==$00)
+_CHAN_TIME:		.equ	2	;(B) current play time
+_CHAN_ID:		.equ	3	;(B) channel mask
  
 ;=====================================
 ; INIT
@@ -73,18 +68,18 @@ _CHAN_DIV:		.equ	5	; +5 (2) tone divider
 ;=====================================
 INIT:
 	inc 	hl
-	ld 	(afxBnkAdr),hl	;store the start of the sfxbank
+	ld		(afxBnkAdr),hl					;store the start of the sfxbank
  
-	ld 	hl,afxChDesc		;initialize the variables of sfx replayer
-	ld 	bc,$1500
--:	ld 	(hl),c
+	ld 		hl,afxChDesc					;initialize the variables of sfx replayer
+	ld 		bc,$1500
+-:	ld 		(hl),c
 	inc 	hl
 	djnz 	{-}
 
-	dec 	bc			; load BC with 0xffff
-	ld 	(afxChDesc+_CHAN_TIME),bc	; set the current play time to 0xffff 
-	ld 	(afxChDesc+_CHAN_TIME+7),bc	; "
-	ld 	(afxChDesc+_CHAN_TIME+14),bc	; "
+	dec 	bc								; load BC with 0xffff
+	ld 		(afxChDesc+_CHAN_TIME),bc		; set the current play time to 0xffff 
+	ld 		(afxChDesc+_CHAN_TIME+7),bc		; "
+	ld 		(afxChDesc+_CHAN_TIME+14),bc	; "
 	
 	ret
  
@@ -94,114 +89,64 @@ INIT:
 ; ISR routine to generate sound.
 ;=====================================
 FRAME:
-	ld 	b,$03			; 3 channels to process
-	ld 	ix,afxChDesc		; ix contains start of channel data
+	ld 		b,$03					; 3 channels to process
+	ld 		ix,afxChDesc			; ix contains start of channel data
 	
-	
-	; V O L U M E
 afxFrame0:
-	push 	bc			; store counter
-	
-	;--- check if addres of channel is beyond 0xbff (11 in high byte))
-	ld 	a,11
-	ld 	h,(ix+_CHAN_ADDR+1)	; get the high address byte	
-	cp 	h
-	jp 	nc,afxFrame7		; jump to next channel if address too low
+	push 	bc						; store counter
+
+	xor		a
+	ld 		h,(ix+_CHAN_ADDR+1)		; channel data address MSB
+	cp		h
+	jp 		z,_nextChannel			; skip channel if not active
 
 	;--- get the sfx address (we already have H)
-	ld l,(ix+_CHAN_ADDR)		; get sfx address low byte
+	ld 		l,(ix+_CHAN_ADDR)		; get sfx address low byte
 
-	ld e,(hl)			;load the volume+CMD in E
-	inc hl
+	ld 		e,(hl)					; load the volume+CMD in E
+	inc 	hl
 
-	; set the right volume register (A is still 11)
-	sub b				; subtract the channel number 
-	ld d,b				;(11-3=8, 11-2=9, 11-1=10)
-                           
-	ld c,SG			;������ ������ ��������
-	ld iyh,c			;���� ���������
+	ld		a,e
+	and		15
+	or		(ix+_CHAN_ID)
+	or		$90
+	out 	($20),a					; chan volume
 
-	out (c),a			;������� ������� ���������
-
-	in a,($22)			; get the current volume
-
-	; APPLY RELATIVE VOLUME
-	cp 16
-	jr nc,{+};$+4			; jump if current vol >= 16 -> Envelope
-	sub 3;4				; a= a -3 
-	jr nc,{+};$+3			; jump if current volume > 3 -> hearable
-	xor a				; volume = 0
-+:	ld b,a				; set volume in b
-
-	ld a,e				; restore volume in a
-
-	and $0f				; only use low 4 bits (high 4 bits are cmd info)
-	add a,(ix+_CHAN_VOL)		; add the relative volume
-	cp 15				; is vol <= 15?
-	jp m,{+};$+5			; jmp if volume is <= 15
-	ld a,15				; set max volume???
-	
-+:	or a				;??
-	jp p,{+};$+4			;??	
-	xor a				;
-	
-+:	cp 13				;������� ����� ������� �� ������
-	jr nc,curvON
-
-	cp b
-	jr c,curvOFF
-	
-curvON:
-	ld iyh,SG1			;���
-
-curvOFF:
-	ld c,iyh
-	
-	out (c),a			;���������� ����� ���������
-	
 	;--- Test if need to update the tone regs
-	bit 5,e				;Bit 5 is 1 if we have new tone val
-	jr z,afxFrame1			;jmp if there is not nots update
-	ld a,(hl)
-	ld (ix+_CHAN_DIV),a		; store note high
-	inc hl
-	ld a,(hl)
-	ld (ix+_CHAN_DIV+1),a		; store note low
-	inc hl
+	bit 	5,e						;Bit 5 is 1 if we have new tone val
+	jr 		z,_checkNoise
+
+	ld 		d,(hl)
+	inc 	hl
+	ld 		a,(hl)
+	inc 	hl
+
+	and		15
+	or		(ix+_CHAN_ID)
+	or		$80
+	out 	($20),a					; chan tone
+
+	ld		a,d
+	and		$7f
+	out 	($20),a					; chan tone
+
+_checkNoise:
+	bit 	6,e
+	jr 		z,_bumpTimer
 	
-afxFrame1:
-	;determin the channel to write to
-	ld a,3				;�������� �������� ����:
-	sub d				;3-3=0, 3-2=1, 3-1=2
-	add a,a				;0*2=0, 1*2=2, 2*2=4
-		
-	out (SG),a			;������� �������� ����
-	ld c,iyh			;SG(off)/$A1(on)
-	
-	ld d,(ix+_CHAN_DIV)
-	out (c),d
-	inc a
-	out (SG),a
-	
-	ld d,(ix+_CHAN_DIV+1)
-	out (c),d
-	
-	bit 6,e				;����� ��������� ����?
-	jr z,afxFrame3		;��� �� ����������
-	
-	ld a,(hl)			;������ �������� ����
-	sub $20			
-	; noise > 1F is the end of the sfx
-	jr c,afxFrame2		;������ $20, ������ ������
-	ld h,a				;����� ����� �������
-	ld (ix+_CHAN_TIME),$fe		;������ ����� ����������-1
-	ld (ix+_CHAN_TIME+1),$ff
-	ld e,$90			;��������� ��� � ��� � �������
-	ld iyh,SG1			;����� ����� ���������
-	jr afxFrame3
- 
- 	; N O I S E
-afxFrame2:
+	ld 		a,(hl)
+	cp		$20
+	jr		nz,_doNoise
+
+	; finished
+
+	xor		a
+	ld		(ix+_CHAN_ADDR),a
+	ld 		(ix+_CHAN_ADDR+1),a
+	jr		_nextChannel
+
+
+_doNoise:
 	inc hl
 	
 	ld c,SG			;����� �������� ����
@@ -250,7 +195,7 @@ afxFrame5:
 	ld (ix+_CHAN_ADDR),l			;��������� ������������ �����
 	ld (ix+_CHAN_ADDR+1),h
  
-afxFrame7:	
+_nextChannel:	
 	;-- Set the next channel
 	ld bc,7				;channel data size is 7
 	add ix,bc			
