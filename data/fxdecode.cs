@@ -25,8 +25,17 @@ public class SoundBankSplitter
         return errorNumber;
     }
 
+    public static void opAdd(List<byte> output, int op) {
+        output.Add((byte)op);
+        Console.Write($" {op:X2}");
+    }
+
     public static int Main(string[] args)
     {
+//   AY   fHz = CLKhz / 64 / tRegVal;
+//   SN   fHz = CLKhz / 32 / tRegVal;
+        var output = new List<byte>();
+
         if (args.Length < 1)
         {
             return ConsoleError("Usage: fxdecode <fx file>", 1);
@@ -40,20 +49,47 @@ public class SoundBankSplitter
 
         var bytes = File.ReadAllBytes(inputFile);
         var i = 0;
-        while(i < bytes.Length) {
+        while(i < bytes.Length && (bytes[i] != 0xd0 && bytes[i+1] != 0x20)) {
+            var newCtl = 0;
+
             var f = bytes[i];
-            Console.Write($"Vol: {f&15} ");
+
+            var tone = (f & 0x20) != 0;
+            var noise = (f & 0x40) != 0;
+            var tVal = 0;
+            var nVal = 0;
+            var vol = f & 15;
+
+            newCtl = 15 - vol;
+
+            Console.Write($"Vol: {vol} ");
             i ++;
-            if ((f & 0x20) != 0) {
-                Console.Write($"Tone: {bytes[i] + bytes[i+1] * 256} ");
+            if (tone) {
+                tVal = bytes[i] + bytes[i+1] * 256;
+                newCtl |= 0x80;
+                Console.Write($"Tone: {tVal} ");
                 i+= 2;
             }
-            if ((f & 0x40) != 0) {
-                Console.Write($"Noise: {bytes[i] & 15} ");
+            if (noise) {
+                nVal = bytes[i] & 15;
+                newCtl |= 0x40;
+                Console.Write($"Noise: {nVal} ");
                 ++i;
+                noise = false;
+            }
+
+            opAdd(output, newCtl);
+
+            if (tone){
+                var tLo = tVal & 15;
+                var tHi = (tVal >> 4) & 0x3f;
+                opAdd(output, tLo);
+                opAdd(output, tHi);
             }
             Console.WriteLine("");
         }
+        opAdd(output, 0x3f);
+        File.WriteAllBytes("0.smfx", output.ToArray());
         return 0;
     }
 }

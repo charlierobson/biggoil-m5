@@ -177,6 +177,10 @@ newtonep4=newtone+11
 	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$D0,$20
 	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$D0,$20
 
+afxChDesc:
+	.db		0,0,0,(0<<5)
+	.db		0,0,0,(1<<5)
+	.db		0,0,0,(2<<5)
 
 
 ; =-=-=-=-= self-modifying codez =-=-=-=-=
@@ -249,15 +253,4 @@ seg_bss:
 	.var	byte, headchar
 	.var	byte, fuelchar
 	.var	byte[ENEMYSIZE*NENEMIES], enemydata
-	.var	byte[7*3], afxChDesc
 	.var	word, afxBnkAdr
-	.var	byte, curvolCHN
-
-
-;AYFX_RAM	 
-; channels descriptors, 7 bytes per channel
-; +0 (2) current addr. (channel is free, if MSB==#00)
-; +2 (2) current play time
-; +4 (1) sfx volume
-; +5 (2) tone divider
-; ...

@@ -18,7 +18,7 @@ game:
 
 	call	displayscoreline
 
-	call	initsfx
+;;;;	call	initsfx
 
 newlevel:
 	call	displaylevel

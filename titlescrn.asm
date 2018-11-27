@@ -23,6 +23,8 @@ _titleloop:
 	and		127
 	jr		nz,_nochangetext
 
+	call	AYFX.PLAY
+
 	ld		hl,_tt1
 	ld		a,(frames)
 	and		128
