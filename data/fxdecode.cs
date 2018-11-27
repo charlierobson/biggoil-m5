@@ -81,6 +81,7 @@ public class SoundBankSplitter
             opAdd(output, newCtl);
 
             if (tone){
+                tVal /= 4;
                 var tLo = tVal & 15;
                 var tHi = (tVal >> 4) & 0x3f;
                 opAdd(output, tLo);

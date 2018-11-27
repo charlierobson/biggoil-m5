@@ -6,11 +6,13 @@ function compress {
     rm data/$1.bin
 }
 
-compress title
-compress end
-compress lvl1
-compress lvl2
-compress lvl3
-compress lvl4
+if [ -z "$1" ]; then
+    compress title
+    compress end
+    compress lvl1
+    compress lvl2
+    compress lvl3
+    compress lvl4
+fi
 
 brass -s bom5.asm bom5.rom -l bom5.html

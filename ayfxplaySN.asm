@@ -83,22 +83,20 @@ _processChan:
 	or		$90
 	out		($20),a					; chan volume
 
-	;--- Test if need to update the tone regs
-	ld		a,e
+	ld		a,e						; vol has been set, was this the effect terminator?
 	cp		$3f
 	jp		z,_channelDone
 
-	bit		_BIT_T,e				;Bit 5 is 1 if we have new tone val
+	bit		_BIT_T,e				; check if we have new tone val
 	jr		z,_checkNoise
 
-	ld		a,(hl)
+	ld		a,(hl)					; get 4 ls bits
 	inc		hl
-	and		15
 	or		(ix+_CHAN_ID)
 	or		$80
 	out		($20),a					; chan tone lsb
 
-	ld		a,(hl)
+	ld		a,(hl)					; get 6 ms bits
 	inc		hl
 	out		($20),a					; chan tone msb
 
