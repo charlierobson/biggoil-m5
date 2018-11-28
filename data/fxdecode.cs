@@ -34,6 +34,8 @@ public class SoundBankSplitter
     {
 //   AY   fHz = CLKhz / 64 / tRegVal;
 //   SN   fHz = CLKhz / 32 / tRegVal;
+
+
         var output = new List<byte>();
 
         if (args.Length < 1)
@@ -81,10 +83,15 @@ public class SoundBankSplitter
             opAdd(output, newCtl);
 
             if (tone){
-                var tLo = tVal & 15;
-                var tHi = (tVal >> 4) & 0x3f;
+                var F = 4000000 / 64 / tVal;
+                var rv = 4000000 / 32 / F;
+
+                var tLo = rv & 15;
+                var tHi = (rv >> 4) & 0x3f;
+
                 opAdd(output, tLo);
                 opAdd(output, tHi);
+                Console.Write($"tvsn: {rv} ");
             }
             Console.WriteLine("");
         }

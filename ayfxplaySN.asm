@@ -41,7 +41,6 @@ _BIT_N			.equ	6
 ; in HL is the address of the sfxbank.
 ;=====================================
 INIT:
-	inc		hl
 	ld		(afxBnkAdr),hl					; store the start of the sfxbank
 
 	xor		a								; silence all channels
