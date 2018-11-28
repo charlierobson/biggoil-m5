@@ -1,27 +1,16 @@
 	.module AYFX
 
-;SN76489 version of AYFX player
-;by SirMorris, AY-3-8910 original
-;by Shiru and AlCo, 2006-2007
+; SN76489 version of AYFX player by SirMorris, 2018
+; AY-3-8910 original by Shiru and AlCo, 2006-2007
 
 ; data structure
-;
-; nt
-; 00 = no updates
-; 01 = update tone
-; 10 = update noise
-; 11 = update tone + noise
 
-; cmd+vol byte  [nt--vvvv]				; vvvv = volume attenuation: $0 = full vol, $F = silent
-; note (word) 	[----llll][--hhhhhh]	; only if t = true
-; noise (byte)	[--------]				; only if n = true
+; cmd+vol (byte)	[TN--vvvv]				T = tone update, N = noise update
+; note    (word)	[xxxxllll][xxmmmmmm]	data present only if T=1. l = lsb, m = msb
+; noise   (byte)	[xxxxxwnn]				data present only if N=1. w=1 whitenoise, nn = noise rate
 
-; cmd_vol byte	[00111111]				; end marker 0x3F - silences channel
-
-
-
-; PSG FREQ :  F = 4MHz / 64 / nn      ;with nn in range 1..4095 (nn=0 acts as nn=1)
-; SN FREQ  :  F = 4MHz / 2 x reg value x divider (16)
+; PSG FREQ: F = 4000000 / 64 / nn							with nn in range 1..4095 (nn=0 acts as nn=1)
+; SN FREQ:  F = 4000000 / 2 x reg value x divider (16)
 ; MSX to SN freq conversion is SMS = MSX / 2
 
 ; PSG NOISE:  0 - 1F
@@ -32,19 +21,19 @@
 ; SN is always white noise and fixed volume (0xC?)
 
 
-
-; cmd+vol byte	[TN--vvvv]				T = tone update, N = noise update
-; note (word)	[xxxxllll][xxmmmmmm]	(only if T=1, l = lsb, m = msb)
-; noise (byte)	[xxxxxwnn]				(only if N=1) w=1 whitenoise
-
-
-_CHAN_ADDR:		.equ	0	;(W) current addr. (channel is free, if MSB==$00)
+_CHAN_ADDR:		.equ	0	;(W) current addr. channel is free if MSB = 0
 _CHAN_TIME:		.equ	2	;(B) current play time
-_CHAN_ID:		.equ	3	;(B) channel mask
+_CHAN_ID:		.equ	3	;(B) channel mask used, to build register data
+
+_CHAN_SIZE = 4
+
+_CHAN0 = 0
+_CHAN1 = _CHAN_SIZE
+_CHAN2 = _CHAN_SIZE*2
+
 _BIT_T			.equ	7
 _BIT_N			.equ	6
 
- _CHAN_SIZE = 4
 
 
 ;=====================================
@@ -52,26 +41,37 @@ _BIT_N			.equ	6
 ; in HL is the address of the sfxbank.
 ;=====================================
 INIT:
+	inc		hl
 	ld		(afxBnkAdr),hl					; store the start of the sfxbank
-	xor		a
-	ld		(afxChDesc),a
-	ld		(afxChDesc+_CHAN_SIZE),a
-	ld		(afxChDesc+_CHAN_SIZE+_CHAN_SIZE),a
+
+	xor		a								; silence all channels
+	ld		(afxChDesc+_CHAN0),a
+	ld		(afxChDesc+_CHAN1),a
+	ld		(afxChDesc+_CHAN2),a
 	ret
+
 
 ;=====================================
 ; FRAME
 ; ISR routine to generate sound.
 ;=====================================
 FRAME:
-	ld		b,$03					; 3 channels to process
-	ld		ix,afxChDesc			; ix contains start of channel data
+	ld		ix,afxChDesc+_CHAN0
+	call	_processChan
+	ld		ix,afxChDesc+_CHAN1
+	call	_processChan
+	ld		ix,afxChDesc+_CHAN2
+	call	_processChan
+
+_processNoise:
+	ret
+
 
 _processChan:
 	ld		h,(ix+_CHAN_ADDR+1)		; channel data address MSB
 	dec		h
 	inc		h
-	jp		z,_nextChannel			; skip channel if not active
+	ret		z						; nothing to do if msb is 0
 
 	ld		l,(ix+_CHAN_ADDR)		; get sfx address low byte
 	ld		e,(hl)					; cmd + volume
@@ -85,7 +85,13 @@ _processChan:
 
 	ld		a,e						; vol has been set, was this the effect terminator?
 	cp		$3f
-	jp		z,_channelDone
+	jr		nz,_channelContinues
+
+	ld		(ix+_CHAN_ADDR+1),0
+	ret
+
+_channelContinues:
+	inc		(ix+_CHAN_TIME)
 
 	bit		_BIT_T,e				; check if we have new tone val
 	jr		z,_checkNoise
@@ -102,26 +108,16 @@ _processChan:
 
 _checkNoise:
 	bit		_BIT_N,e				; any noise to do?
-	jr		z,_bumpTimer
+	jr		nz,_updatePtr
 
 _doNoise:
 	inc		hl
-	jr		_bumpTimer
 
+	; do whatever noise stuff needs doing here
 
-_channelDone:
-	ld		hl,0
-
-_bumpTimer:
-	inc		(ix+_CHAN_TIME)
+_updatePtr:
 	ld		(ix+_CHAN_ADDR),l
 	ld		(ix+_CHAN_ADDR+1),h
- 
-_nextChannel:
-	ld		de,_CHAN_SIZE
-	add		ix,de
-	dec		b
-	jp		nz,_processChan
 	ret
 
 
@@ -132,6 +128,6 @@ _nextChannel:
 ; C = relative volume
 ;=====================================
 PLAY:
-	ld 		hl,(afxBnkAdr)		;Add the start of the sfxbank to the offset
+	ld 		hl,(afxBnkAdr)
 	ld		(afxChDesc+_CHAN_ADDR),hl
 	ret
