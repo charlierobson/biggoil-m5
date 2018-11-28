@@ -41,7 +41,7 @@ _BIT_N			.equ	6
 ; in HL is the address of the sfxbank.
 ;=====================================
 INIT:
-	inc		hl
+;	inc		hl
 	ld		(afxBnkAdr),hl					; store the start of the sfxbank
 
 	xor		a								; silence all channels
@@ -108,7 +108,7 @@ _channelContinues:
 
 _checkNoise:
 	bit		_BIT_N,e				; any noise to do?
-	jr		nz,_updatePtr
+	jr		z,_updatePtr
 
 _doNoise:
 	inc		hl
