@@ -17,7 +17,7 @@ _endloop:
 
 	ld		a,(pl_current_position)
 	cp		18
-	call	z,initsfx
+;;;;	call	z,initsfx
 
 	ld		a,(fire)
 	and		3

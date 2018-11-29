@@ -46,7 +46,7 @@ generateenemy:
 
 
 startenemy:
-	ld		a,3
+	ld		hl,smfx3
 	call	AYFX.PLAY
 
 	xor		a
@@ -193,7 +193,7 @@ _testhit:
 	res		2,h						; it will be erased anyway so why not
 
 	ld		(playerhit),a			; signal life lost
-	ld		a,7
+	ld		hl,smfx7
 	call	AYFX.PLAY
 
 _eupd:
@@ -215,7 +215,7 @@ _ediedwithscore:
 	ld		a,(scoretoadd)
 	add		a,2
 	ld		(scoretoadd),a
-	ld		a,14
+	ld		hl,smfx14
 	call	AYFX.PLAY
 
 _edied:

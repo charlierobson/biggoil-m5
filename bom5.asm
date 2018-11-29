@@ -41,7 +41,6 @@ start:
 
     call    initmem
     call    initVDP
-    call    initsfx
 
 	call	seedrnd
 

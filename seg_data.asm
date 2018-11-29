@@ -182,6 +182,9 @@ afxChDesc:
 	.db		0,0,0,(1<<5)
 	.db		0,0,0,(2<<5)
 
+drone1:
+    .byte       %10101000
+    .byte       $0f,$3f
 
 ; =-=-=-=-= self-modifying codez =-=-=-=-=
 
@@ -249,7 +252,7 @@ seg_bss:
 	.var	byte, leveltrig
 	.var	byte, lx
 	.var	word, rndseed
-	.var	byte, psound
+	.var	word, psound
 	.var	byte, headchar
 	.var	byte, fuelchar
 	.var	byte[ENEMYSIZE*NENEMIES], enemydata

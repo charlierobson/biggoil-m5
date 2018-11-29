@@ -14,7 +14,7 @@ titlescn:
 	call	displayscoreonts
 	call	displayhionts
 
-	call	init_stc
+    call    AYFX.INIT
 
 _titleloop:
 	call	framesync
@@ -22,8 +22,6 @@ _titleloop:
 	ld		a,(frames)
 	and		127
 	jr		nz,_nochangetext
-
-	call	AYFX.PLAY
 
 	ld		hl,_tt1
 	ld		a,(frames)

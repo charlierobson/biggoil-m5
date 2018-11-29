@@ -49,7 +49,7 @@ public class SoundBankSplitter
         for (int i = 0; i < count; ++i) {
             int o = offsets[i];
             int l = offsets[i+1] - o;
-            File.WriteAllBytes($"{i}.afx", bytes.Skip(o).Take(l).ToArray());
+            File.WriteAllBytes($"{i+1}.afx", bytes.Skip(o).Take(l).ToArray());
         }
 
         return 0;
