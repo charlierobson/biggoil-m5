@@ -27,6 +27,10 @@ CHAN1 = 0
 CHAN2 = CHAN_SIZE
 CHAN3 = CHAN_SIZE*2
 
+CHAN1ID = 0<<5
+CHAN2ID = 1<<5
+CHAN3ID = 2<<5
+
 _BIT_T			.equ	7
 _BIT_N			.equ	6
 _BIT_DRONE		.equ	5
@@ -41,6 +45,14 @@ INIT:
 	ld		(afxChDesc+CHAN1),a
 	ld		(afxChDesc+CHAN2),a
 	ld		(afxChDesc+CHAN3),a
+
+	ld		a,CHAN1ID+$9f
+	out		($20),a
+	ld		a,CHAN2ID+$9f
+	out		($20),a
+	ld		a,CHAN3ID+$9f
+	out		($20),a
+
 	ret
 
 

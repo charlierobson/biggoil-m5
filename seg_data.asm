@@ -179,10 +179,9 @@ newtonelen = $-newtone
 	.byte   $80,$09,$3f,$82,$03,$20,$85,$0D,$12,$88,$0B,$0f,$3f
 
 afxChDesc:
-	.db		0,0,0,(0<<5)
-
-	.db		0,0,0,(1<<5)
-	.db		0,0,0,(2<<5)
+	.db		0,0,0,CHAN1ID
+	.db		0,0,0,CHAN2ID
+	.db		0,0,0,CHAN3ID
 
 drone1:
     .byte       %10101000
