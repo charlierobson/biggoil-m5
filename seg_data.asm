@@ -104,10 +104,10 @@ seg_data_target = $7340		;	dfile + $300 + $20
 
 ; uninitialised data goes here
 seg_bss_target = $7800
-seg_bss_size = $100
+seg_bss_size = $f0
 
 
-; retractqueue code requires a 'backstop' - the byte at $77ff is used.
+; retractqueue code requires a 'backstop' - the byte at retractqueue-1 is used.
 ;
 retractqueue = $7900
 entrances = $7a00
@@ -180,7 +180,7 @@ newtonelen = $-newtone
 
 afxChDesc:
 	.db		0,0,0,(0<<5)
-	
+
 	.db		0,0,0,(1<<5)
 	.db		0,0,0,(2<<5)
 

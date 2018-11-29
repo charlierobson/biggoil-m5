@@ -85,7 +85,10 @@ redefinekeys:
 
 	ld		hl,_pkf
 	ld		de,$0802
-    call    textOut
+	call	textOut
+
+	ld		hl,smfx3
+	call	AYFX.PLAY
 
 -:	call	_getcolbit			; wait for key release
 	jr		nz,{-}
@@ -105,17 +108,17 @@ redefinekeys:
 	ld		hl,_frk
 
 _redeffit:
-    ld      e,(hl)
-    inc     hl
-    ld      d,(hl)
-    inc     hl
+	ld		e,(hl)
+	inc		hl
+	ld		d,(hl)
+	inc		hl
 	ld		(keyaddress),de		; the input data we're altering
 
-    ld      e,(hl)
-    inc     hl
-    ld      d,(hl)
-    inc     hl
-    call    textOut
+	ld		e,(hl)
+	inc		hl
+	ld		d,(hl)
+	inc		hl
+	call	textOut
 
 _redefloop:
 	call	_getcolbitDebounced
@@ -134,6 +137,9 @@ _redefloop:
 
     ld      a,c                     ; store the bit number for the key
     ld      (keybit),a
+
+	ld		hl,smfx4
+	call	AYFX.PLAY
 
     call    _showkey
 
