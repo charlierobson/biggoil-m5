@@ -174,8 +174,8 @@ newtonep1=newtone+1
 newtonep2=newtone+5
 newtonep3=newtone+8
 newtonep4=newtone+11
-	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$D0,$20
-	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$D0,$20
+	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$3f
+	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$3f
 
 afxChDesc:
 	.db		0,0,0,(0<<5)
@@ -255,5 +255,7 @@ seg_bss:
 	.var	word, psound
 	.var	byte, headchar
 	.var	byte, fuelchar
+	.var	byte, droneframe
+	.var	byte, dronerate
 	.var	byte[ENEMYSIZE*NENEMIES], enemydata
 	.var	word, afxBnkAdr

@@ -124,14 +124,45 @@ _updatePtr:
 ;=====================================
 PLAY:
 	; find an empty channel
-	ld		bc,(afxChDesc+CHAN_ADDR+1)
-	ld		a,b
+	ld		a,(afxChDesc+CHAN1+CHAN_ADDR+1)
 	and		a
-	jr		nz,_on2
+	jr		z,_playon1
 
+	ld		a,(afxChDesc+CHAN2+CHAN_ADDR+1)
+	and		a
+	jr		nz,_useOldest
+
+_playon2:
+	ld		(afxChDesc+CHAN2+CHAN_ADDR),hl
+	ret
+
+_useOldest:
+	ld		a,(afxChDesc+CHAN2+CHAN_TIME)
+	ld		b,a
+	ld		a,(afxChDesc+CHAN1+CHAN_TIME)
+	sub		b
+	jr		c,_playon2
+
+_playon1:
 	ld		(afxChDesc+CHAN_ADDR),hl
 	ret
 
-_on2:
-	ld		(afxChDesc+CHAN_ADDR+CHAN_SIZE),hl
+
+	; channel 3 is the drone/longplay channel.
+	; a drone will only ever play over a drone
+	; no non-drone sound will interrupt another
+PLAYON3:
+	ld		a,(afxChDesc+CHAN3+CHAN_ADDR+1)
+	and		a
+	jr		z,_canPlayOn3
+
+	ld		de,(afxChDesc+CHAN3+CHAN_ADDR)			; get current sound
+	ld		a,(de)
+	and		$20
+
+
+
+
+_canPlayOn3:
+	ld		(afxChDesc+CHAN3+CHAN_ADDR),hl
 	ret
