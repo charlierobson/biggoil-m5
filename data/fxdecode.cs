@@ -32,10 +32,6 @@ public class SoundBankSplitter
 
     public static int Main(string[] args)
     {
-//   AY   fHz = CLKhz / 64 / tRegVal;
-//   SN   fHz = CLKhz / 32 / tRegVal;
-
-
         var output = new List<byte>();
 
         if (args.Length < 1)
@@ -49,9 +45,11 @@ public class SoundBankSplitter
             return ConsoleError("Specified file could not be opened.", 2);
         }
 
+        var outfileName = Path.ChangeExtension(inputFile, "smfx");
+
         var bytes = File.ReadAllBytes(inputFile);
         var i = 0;
-        while(i < bytes.Length && (bytes[i] != 0xd0 && bytes[i+1] != 0x20)) {
+        while(i < bytes.Length && !(bytes[i] == 0xd0 && bytes[i+1] == 0x20)) {
             var newCtl = 0;
 
             var f = bytes[i];
@@ -96,7 +94,7 @@ public class SoundBankSplitter
             Console.WriteLine("");
         }
         opAdd(output, 0x3f);
-        File.WriteAllBytes("0.smfx", output.ToArray());
+        File.WriteAllBytes(outfileName, output.ToArray());
         return 0;
     }
 }

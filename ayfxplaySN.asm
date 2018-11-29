@@ -9,10 +9,6 @@
 ; note    (word)	[xxxxllll][xxmmmmmm]	data present only if T=1. l = lsb, m = msb
 ; noise   (byte)	[xxxxxwnn]				data present only if N=1. w=1 whitenoise, nn = noise rate
 
-; PSG FREQ: F = 4000000 / 64 / nn							with nn in range 1..4095 (nn=0 acts as nn=1)
-; SN FREQ:  F = 4000000 / 2 x reg value x divider (16)
-; MSX to SN freq conversion is SMS = MSX / 2
-
 ; PSG NOISE:  0 - 1F
 ; SN NOISE :  0 - 3
 ; MSX to SN freg conversion is:
@@ -21,19 +17,19 @@
 ; SN is always white noise and fixed volume (0xC?)
 
 
-_CHAN_ADDR:		.equ	0	;(W) current addr. channel is free if MSB = 0
-_CHAN_TIME:		.equ	2	;(B) current play time
-_CHAN_ID:		.equ	3	;(B) channel mask used, to build register data
+CHAN_ADDR:		.equ	0	;(W) current addr. channel is free if MSB = 0
+CHAN_TIME:		.equ	2	;(B) current play time
+CHAN_ID:		.equ	3	;(B) channel mask used, to build register data
 
-_CHAN_SIZE = 4
+CHAN_SIZE = 4
 
-_CHAN0 = 0
-_CHAN1 = _CHAN_SIZE
-_CHAN2 = _CHAN_SIZE*2
+CHAN1 = 0
+CHAN2 = CHAN_SIZE
+CHAN3 = CHAN_SIZE*2
 
 _BIT_T			.equ	7
 _BIT_N			.equ	6
-
+_BIT_DRONE		.equ	5
 
 
 ;=====================================
@@ -41,12 +37,10 @@ _BIT_N			.equ	6
 ; in HL is the address of the sfxbank.
 ;=====================================
 INIT:
-	ld		(afxBnkAdr),hl					; store the start of the sfxbank
-
 	xor		a								; silence all channels
-	ld		(afxChDesc+_CHAN0),a
-	ld		(afxChDesc+_CHAN1),a
-	ld		(afxChDesc+_CHAN2),a
+	ld		(afxChDesc+CHAN1),a
+	ld		(afxChDesc+CHAN2),a
+	ld		(afxChDesc+CHAN3),a
 	ret
 
 
@@ -55,11 +49,11 @@ INIT:
 ; ISR routine to generate sound.
 ;=====================================
 FRAME:
-	ld		ix,afxChDesc+_CHAN0
+	ld		ix,afxChDesc+CHAN1
 	call	_processChan
-	ld		ix,afxChDesc+_CHAN1
+	ld		ix,afxChDesc+CHAN2
 	call	_processChan
-	ld		ix,afxChDesc+_CHAN2
+	ld		ix,afxChDesc+CHAN3
 	call	_processChan
 
 _processNoise:
@@ -67,37 +61,37 @@ _processNoise:
 
 
 _processChan:
-	ld		h,(ix+_CHAN_ADDR+1)		; channel data address MSB
+	ld		h,(ix+CHAN_ADDR+1)		; channel data address MSB
 	dec		h
 	inc		h
 	ret		z						; nothing to do if msb is 0
 
-	ld		l,(ix+_CHAN_ADDR)		; get sfx address low byte
+	ld		l,(ix+CHAN_ADDR)		; get sfx address low byte
 	ld		e,(hl)					; cmd + volume
 	inc		hl
 
 	ld		a,e
 	and		15
-	or		(ix+_CHAN_ID)
+	or		(ix+CHAN_ID)
 	or		$90
 	out		($20),a					; chan volume
 
 	ld		a,e						; vol has been set, was this the effect terminator?
 	cp		$3f
-	jr		nz,_channelContinues
+	jr		nz,CHANnelContinues
 
-	ld		(ix+_CHAN_ADDR+1),0
+	ld		(ix+CHAN_ADDR+1),0
 	ret
 
-_channelContinues:
-	inc		(ix+_CHAN_TIME)
+CHANnelContinues:
+	inc		(ix+CHAN_TIME)
 
 	bit		_BIT_T,e				; check if we have new tone val
 	jr		z,_checkNoise
 
 	ld		a,(hl)					; get 4 ls bits
 	inc		hl
-	or		(ix+_CHAN_ID)
+	or		(ix+CHAN_ID)
 	or		$80
 	out		($20),a					; chan tone lsb
 
@@ -105,9 +99,12 @@ _channelContinues:
 	inc		hl
 	out		($20),a					; chan tone msb
 
+	bit		_BIT_DRONE,e			; if this is a drone then return w/o updating pointers
+	ret		nz
+
 _checkNoise:
 	bit		_BIT_N,e				; any noise to do?
-	jr		nz,_updatePtr
+	jr		z,_updatePtr
 
 _doNoise:
 	inc		hl
@@ -115,18 +112,57 @@ _doNoise:
 	; do whatever noise stuff needs doing here
 
 _updatePtr:
-	ld		(ix+_CHAN_ADDR),l
-	ld		(ix+_CHAN_ADDR+1),h
+	ld		(ix+CHAN_ADDR),l
+	ld		(ix+CHAN_ADDR+1),h
 	ret
 
 
 ;=====================================
 ; PLAY
 ; Start playback of an SFX
-; A = sfx number, 
-; C = relative volume
+; HL = sfx data
 ;=====================================
 PLAY:
-	ld 		hl,(afxBnkAdr)
-	ld		(afxChDesc+_CHAN_ADDR),hl
+	; find an empty channel
+	ld		a,(afxChDesc+CHAN1+CHAN_ADDR+1)
+	and		a
+	jr		z,_playon1
+
+	ld		a,(afxChDesc+CHAN2+CHAN_ADDR+1)
+	and		a
+	jr		nz,_useOldest
+
+_playon2:
+	ld		(afxChDesc+CHAN2+CHAN_ADDR),hl
+	ret
+
+_useOldest:
+	ld		a,(afxChDesc+CHAN2+CHAN_TIME)
+	ld		b,a
+	ld		a,(afxChDesc+CHAN1+CHAN_TIME)
+	sub		b
+	jr		c,_playon2
+
+_playon1:
+	ld		(afxChDesc+CHAN_ADDR),hl
+	ret
+
+
+	; channel 3 is the drone/longplay channel.
+	; a drone will only ever play over a drone
+	; no non-drone sound will interrupt another
+PLAYON3:
+	ld		a,(afxChDesc+CHAN3+CHAN_ADDR+1)
+	and		a
+	jr		z,_canPlayOn3
+
+	ld		de,(afxChDesc+CHAN3+CHAN_ADDR)			; get current sound
+	ld		a,(de)
+	and		$20
+
+
+
+
+_canPlayOn3:
+	ld		(afxChDesc+CHAN3+CHAN_ADDR),hl
 	ret

@@ -168,7 +168,7 @@ _headupdate:
     jp      z,mainloop
 
 nextlevel:
-	ld		a,12
+	ld		hl,smfx12
 	call	AYFX.PLAY
 
 	call	tidyup
@@ -218,7 +218,7 @@ loselife:
 	cp		1
 	jr		nz,{+}
 
-	ld		a,13
+	ld		hl,smfx13
 	call	AYFX.PLAY
 
 +:	call	tidyup

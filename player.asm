@@ -34,8 +34,8 @@ _nomove:
 	ret
 
 _moveavail:
-	ld		a,17						; preempt the sound - snuffle
-	ld		(psound),a
+	ld		hl,smfx17						; preempt the sound - snuffle
+	ld		(psound),hl
 
 	ld		hl,(playerpos)				; stash the current head offset
 	ld		(oldplayerpos),hl
@@ -60,8 +60,10 @@ _intothescore:
 	inc		a
 	ld		(scoretoadd),a				; defer adding of score because it's register intensive
 
-	ld		a,4							; update sound - gloop
-	ld		(psound),a
+	push	hl
+	ld		hl,smfx4						; update sound - gloop
+	ld		(psound),hl
+	pop		hl
 
 _intothevoid:
 	ld		a,(winchframe)				; update winch animation
@@ -92,8 +94,10 @@ _intothevoid:
 	ld		(hl),MAP_PIPE
 	res		2,h
 
-	ld		a,(psound)
+	push	hl
+	ld		hl,(psound)
 	call	AYFX.PLAY
+	pop		hl
 
 	xor		a
 	ret
