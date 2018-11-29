@@ -81,15 +81,11 @@ public class SoundBankSplitter
             opAdd(output, newCtl);
 
             if (tone){
-                var F = 4000000 / 64 / tVal;
-                var rv = 4000000 / 32 / F;
-
-                var tLo = rv & 15;
-                var tHi = (rv >> 4) & 0x3f;
+                var tLo = tVal & 15;
+                var tHi = (tVal >> 4) & 0x3f;
 
                 opAdd(output, tLo);
                 opAdd(output, tHi);
-                Console.Write($"tvsn: {rv} ");
             }
             Console.WriteLine("");
         }

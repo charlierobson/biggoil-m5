@@ -171,14 +171,16 @@ jsfire	= gameinputstates + 23
 
 newtone:
 newtonep1=newtone+1
-newtonep2=newtone+5
-newtonep3=newtone+8
-newtonep4=newtone+11
-	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$3f
-	.byte   $EF,$F9,$03,$00,$AD,$03,$02,$AA,$2D,$01,$A7,$FB,$00,$3f
+newtonep2=newtone+4
+newtonep3=newtone+7
+newtonep4=newtone+10
+	.byte   $80,$09,$3f,$82,$03,$20,$85,$0D,$12,$88,$0B,$0f,$3f
+newtonelen = $-newtone
+	.byte   $80,$09,$3f,$82,$03,$20,$85,$0D,$12,$88,$0B,$0f,$3f
 
 afxChDesc:
 	.db		0,0,0,(0<<5)
+	
 	.db		0,0,0,(1<<5)
 	.db		0,0,0,(2<<5)
 

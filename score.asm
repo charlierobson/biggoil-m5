@@ -25,6 +25,7 @@ addscore:
 	and		$0f						; when 0 or 5 then extra man!
 	jr		z,_addbonus
 	cp		5
+	cp		1
 	jr		nz,displayscore
 
 _addbonus:
@@ -33,9 +34,8 @@ _addbonus:
 	ld		(lives),a
 	call	displaymen
 
-	ld		a,$47					; length of uninterruptable sample
-	ld		b,10					; sfx number
-	call	longplay
+	ld		hl,smfx10
+	call	AFX.PLAYON3
 
 displayscore:
 	ld		de,dfile+SCORE_OFFS

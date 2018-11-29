@@ -1,5 +1,6 @@
 initdrone:
 	ld		a,(level)				; level is 0..3 incl
+	and		3
 	rlca
 	rlca							; 0,4,8,12
 	ld		b,a
@@ -8,49 +9,61 @@ initdrone:
 	ld		(dronerate),a
 	xor		a
 	ld		(droneframe),a
-    ret
+	ret
 
 drone:
 	ld		a,(droneframe)
 	dec		a
 	ld		(droneframe),a
-	ret     nc
+	ret		p
 
 	ld		a,(dronerate)
 	ld		(droneframe),a
 	ld		a,(drone1+1)
 	xor		$0f
 	ld		(drone1+1),a
-    ld      hl,drone1
-	jp		AFX.PLAYON3
+	ld		hl,drone1
+	jp		AFX.DRONEON3
 
 
 
 
 resettone:
-	ld		hl,newtone+14
+	ld		hl,newtone+newtonelen
 	ld		de,newtone
-	ld		bc,14
+	ld		bc,newtonelen
 	ldir
 	ret
 
 
 generatetone:
-	ld		de,12
-	ld		hl,(newtonep1)
-	sbc		hl,de
-	ld		(newtonep1),hl
-	ld		hl,(newtonep2)
-	sbc		hl,de
-	ld		(newtonep2),hl
-	ld		hl,(newtonep3)
-	sbc		hl,de
-	ld		(newtonep3),hl
-	ld		hl,(newtonep4)
-	sbc		hl,de
-	ld		(newtonep4),hl
+	ld		hl,newtonep1
+	call	{+}
+	ld		hl,newtonep2
+	call	{+}
+	ld		hl,newtonep3
+	call	{+}
+	ld		hl,newtonep4
+	call	{+}
 	ld		hl,newtone
 	jp		AFX.PLAY
+
++:	ld		e,0				; alter lsb
+	ld		a,(hl)
+	sub		12
+	rl		e				; stash carry
+	and		15				; isolate lsbits (clears carry)
+	ld		(hl),a
+	dec		e
+	ret		m				; return now if no carry
+
+	inc		hl				; otherwise alter msbits
+	ld		a,(hl)
+	dec		a
+	and		$3f
+	ld		(hl),a
+	ret
+
 
 
 
@@ -68,3 +81,5 @@ smfx14:
     .incbin    "data/14.smfx"
 smfx17:
     .incbin    "data/17.smfx"
+smfx10:
+    .incbin    "data/10.smfx"

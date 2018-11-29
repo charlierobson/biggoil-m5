@@ -78,12 +78,12 @@ _processChan:
 
 	ld		a,e						; vol has been set, was this the effect terminator?
 	cp		$3f
-	jr		nz,CHANnelContinues
+	jr		nz,_channelContinues
 
 	ld		(ix+CHAN_ADDR+1),0
 	ret
 
-CHANnelContinues:
+_channelContinues:
 	inc		(ix+CHAN_TIME)
 
 	bit		_BIT_T,e				; check if we have new tone val
@@ -148,21 +148,25 @@ _playon1:
 	ret
 
 
-	; channel 3 is the drone/longplay channel.
-	; a drone will only ever play over a drone
-	; no non-drone sound will interrupt another
-PLAYON3:
-	ld		a,(afxChDesc+CHAN3+CHAN_ADDR+1)
-	and		a
-	jr		z,_canPlayOn3
+DRONEON3:
+	;
+	; a drone on ch3 will only interrupt another drone
+	;
+	ld		ix,afxChDesc+CHAN3
+	ld		e,(ix+CHAN_ADDR)
+	ld		d,(ix+1+CHAN_ADDR)
+	inc		d
+	dec		d
+	jr		z,PLAYON3					; channel is free so play
 
-	ld		de,(afxChDesc+CHAN3+CHAN_ADDR)			; get current sound
 	ld		a,(de)
-	and		$20
+	bit		_BIT_DRONE,a				; bail if not replacing another drone
+	ret		nz
 
-
-
-
-_canPlayOn3:
+PLAYON3:
+	;
+	; channel 3 is the drone/longplay channel.
+	; fx are always played
+	;
 	ld		(afxChDesc+CHAN3+CHAN_ADDR),hl
 	ret
