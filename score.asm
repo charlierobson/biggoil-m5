@@ -25,7 +25,6 @@ addscore:
 	and		$0f						; when 0 or 5 then extra man!
 	jr		z,_addbonus
 	cp		5
-	cp		1
 	jr		nz,displayscore
 
 _addbonus:

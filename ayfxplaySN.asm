@@ -4,18 +4,10 @@
 ; AY-3-8910 original by Shiru and AlCo, 2006-2007
 
 ; data structure
-
+;
 ; cmd+vol (byte)	[TN--vvvv]				T = tone update, N = noise update
 ; note    (word)	[xxxxllll][xxmmmmmm]	data present only if T=1. l = lsb, m = msb
 ; noise   (byte)	[xxxxxwnn]				data present only if N=1. w=1 whitenoise, nn = noise rate
-
-; PSG NOISE:  0 - 1F
-; SN NOISE :  0 - 3
-; MSX to SN freg conversion is:
-;   MSX noise 0 - F -> SN noise 00
-;   MSX noise 10- 1F-> SN noise 01 
-; SN is always white noise and fixed volume (0xC?)
-
 
 CHAN_ADDR:		.equ	0	;(W) current addr. channel is free if MSB = 0
 CHAN_TIME:		.equ	2	;(B) current play time
@@ -38,7 +30,6 @@ _BIT_DRONE		.equ	5
 
 ;=====================================
 ; INIT
-; in HL is the address of the sfxbank.
 ;=====================================
 INIT:
 	xor		a								; silence all channels
@@ -122,6 +113,9 @@ _doNoise:
 	inc		hl
 
 	; do whatever noise stuff needs doing here
+	; perhaps...
+	; log the fact noise is required for this channel, and update
+	; the noise channel after all other channels have been processed
 
 _updatePtr:
 	ld		(ix+CHAN_ADDR),l
@@ -131,11 +125,12 @@ _updatePtr:
 
 ;=====================================
 ; PLAY
-; Start playback of an SFX
+; Start playback of an SFX on CH 1/2
 ; HL = sfx data
 ;=====================================
 PLAY:
 	; find an empty channel
+	;
 	ld		a,(afxChDesc+CHAN1+CHAN_ADDR+1)
 	and		a
 	jr		z,_playon1
@@ -145,6 +140,8 @@ PLAY:
 	jr		nz,_useOldest
 
 _playon2:
+	xor		a
+	ld		(afxChDesc+CHAN2+CHAN_TIME),a
 	ld		(afxChDesc+CHAN2+CHAN_ADDR),hl
 	ret
 
@@ -156,10 +153,17 @@ _useOldest:
 	jr		c,_playon2
 
 _playon1:
-	ld		(afxChDesc+CHAN_ADDR),hl
+	xor		a
+	ld		(afxChDesc+CHAN2+CHAN_TIME),a
+	ld		(afxChDesc+CHAN1+CHAN_ADDR),hl
 	ret
 
 
+;====================================================
+; DRONEON3
+; Start playback of an uninterruptable effect / drone
+; HL = sfx data
+;====================================================
 DRONEON3:
 	;
 	; a drone on ch3 will only interrupt another drone
@@ -175,6 +179,12 @@ DRONEON3:
 	bit		_BIT_DRONE,a				; bail if not replacing another drone
 	ret		nz
 
+;====================================================
+; PLAYON3
+; Unconditionally start playback of an
+; uninterruptable effect
+; HL = sfx data
+;====================================================
 PLAYON3:
 	;
 	; channel 3 is the drone/longplay channel.

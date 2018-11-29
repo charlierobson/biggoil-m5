@@ -34,6 +34,10 @@ _keychar:
 	.asc	"90-^./_\\"
 	.asc	"OP@[L;:]"
 
+_kcs:
+	.word	_k0,_k1,_k2,_k3,_k4,_k5
+_kcsEnd:
+
 _k0:
 	.asc	"CTRL",$ff
 _k1:
@@ -46,10 +50,6 @@ _k4:
 	.asc	"SPACE",$ff
 _k5:
 	.asc	"ENTER",$ff
-
-; must not span a page boundary
-_kcs:
-	.word	_k0,_k1,_k2,_k3,_k4,_k5
 
 
 _bit2bytetbl:
