@@ -259,4 +259,3 @@ seg_bss:
 	.var	byte, droneframe
 	.var	byte, dronerate
 	.var	byte[ENEMYSIZE*NENEMIES], enemydata
-	.var	word, afxBnkAdr
