@@ -85,7 +85,7 @@ _die:
 	call	loselife
 	jp		nz,restart
 
-	ld		b,75
+	ld		b,100
 	call	waitframes
     ret
 

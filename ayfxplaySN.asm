@@ -52,6 +52,8 @@ INIT:
 ; ISR routine to generate sound.
 ;=====================================
 FRAME:
+	xor		a
+	ld		(afxNoise),a
 	ld		ix,afxChDesc+CHAN1
 	call	_processChan
 	ld		ix,afxChDesc+CHAN2
@@ -111,11 +113,6 @@ _checkNoise:
 
 _doNoise:
 	inc		hl
-
-	; do whatever noise stuff needs doing here
-	; perhaps...
-	; log the fact noise is required for this channel, and update
-	; the noise channel after all other channels have been processed
 
 _updatePtr:
 	ld		(ix+CHAN_ADDR),l

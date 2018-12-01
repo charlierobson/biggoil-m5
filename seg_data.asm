@@ -258,4 +258,5 @@ seg_bss:
 	.var	byte, fuelchar
 	.var	byte, droneframe
 	.var	byte, dronerate
+	.var	byte, afxNoise
 	.var	byte[ENEMYSIZE*NENEMIES], enemydata

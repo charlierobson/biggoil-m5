@@ -27,7 +27,7 @@ public class SoundBankSplitter
 
     public static void opAdd(List<byte> output, int op) {
         output.Add((byte)op);
-        Console.Write($" {op:X2}");
+        //Console.Write($" {op:X2}");
     }
 
     public static int Main(string[] args)
@@ -72,7 +72,7 @@ public class SoundBankSplitter
             }
             if (noise) {
                 nVal = bytes[i] & 15;
-                newCtl |= 0x40;
+                if (nVal != 0) newCtl |= 0x40;
                 Console.Write($"Noise: {nVal} ");
                 ++i;
                 noise = false;
@@ -86,6 +86,11 @@ public class SoundBankSplitter
 
                 opAdd(output, tLo);
                 opAdd(output, tHi);
+            }
+            if (noise){
+                if (nVal > 1) nVal = 1;
+                if (nVal > 7) nVal = 2;
+                opAdd(output, nVal);
             }
             Console.WriteLine("");
         }
