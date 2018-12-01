@@ -202,14 +202,24 @@ DRONEON3:
 
 ;====================================================
 ; PLAYON3
-; Unconditionally start playback of an
-; uninterruptable (by chan1,2) effect
 ; HL = sfx data
 ;====================================================
 PLAYON3:
-	;
-	; channel 3 is the drone/longplay channel.
-	; fx are always played
-	;
 	ld		(afxChDesc+CHAN3+CHAN_ADDR),hl
+	ret
+
+;====================================================
+; PLAYON2
+; HL = sfx data
+;====================================================
+PLAYON2:
+	ld		(afxChDesc+CHAN2+CHAN_ADDR),hl
+	ret
+
+;====================================================
+; PLAYON2
+; HL = sfx data
+;====================================================
+PLAYON1:
+	ld		(afxChDesc+CHAN1+CHAN_ADDR),hl
 	ret

@@ -184,7 +184,7 @@ afxChDesc:
 	.db		0,0,0,0,CHAN3ID
 
 drone1:
-    .byte       %10101000
+    .byte       %10101100
     .byte       $0f,$3f
 
 ; =-=-=-=-= self-modifying codez =-=-=-=-=

@@ -34,7 +34,7 @@ _addbonus:
 	call	displaymen
 
 	ld		hl,smfx10
-	call	AFX.PLAYON3
+	call	AYFX.PLAYON3
 
 displayscore:
 	ld		de,dfile+SCORE_OFFS

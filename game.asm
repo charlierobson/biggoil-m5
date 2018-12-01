@@ -90,6 +90,9 @@ _die:
     ret
 
 _playon:
+	ld		hl,0
+	ld		(psound),hl
+
 	ld		a,(fire)				; retract happens quickly so check every frame
 	ld		b,a
 	ld		a,(jsfire)
@@ -163,7 +166,7 @@ _headupdate:
 
 nextlevel:
 	ld		hl,smfx12
-	call	AYFX.PLAY
+	call	AYFX.PLAYON3
 
 	call	tidyup
 	call	levelup
@@ -213,7 +216,7 @@ loselife:
 	jr		nz,{+}
 
 	ld		hl,smfx13
-	call	AYFX.PLAY
+	call	AYFX.PLAYON3
 
 +:	call	tidyup
 	ld		a,(lives)

@@ -12,6 +12,9 @@ initdrone:
 	ret
 
 drone:
+	ld		hl,drone1
+	call	AYFX.DRONEON3
+
 	ld		a,(droneframe)
 	dec		a
 	ld		(droneframe),a
@@ -22,9 +25,7 @@ drone:
 	ld		a,(drone1+1)
 	xor		$0f
 	ld		(drone1+1),a
-	ld		hl,drone1
-	jp		AFX.DRONEON3
-
+	ret
 
 
 
@@ -46,7 +47,7 @@ generatetone:
 	ld		hl,newtonep4
 	call	{+}
 	ld		hl,newtone
-	jp		AFX.PLAY
+	jp		AYFX.PLAYON1
 
 +:	ld		e,0				; alter lsb
 	ld		a,(hl)
@@ -73,7 +74,7 @@ smfx3: ; 'hello' - enemy appears
 smfx4: ; drill - eat oil
     .incbin    "data/4.smfx"
 
-smfx7: ; pipe popped
+smfx7: ; pipe popped / life lost
     .incbin    "data/7.smfx"
 
 smfx12: ; level clear

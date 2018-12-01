@@ -26,15 +26,15 @@ tryleft:
 	ld		c,LEFT
 
 doturn:
-	and		1								; movement in the queried direction?
+	and		1							; movement in the queried direction?
 	jr		nz,_moveavail
 
 _nomove:
-	or		$ff								; nope - continue to check others
+	or		$ff							; nope - continue to check others
 	ret
 
 _moveavail:
-	ld		hl,smfx17						; preempt the sound - snuffle
+	ld		hl,smfx17					; preempt the sound - snuffle
 	ld		(psound),hl
 
 	ld		hl,(playerpos)				; stash the current head offset
@@ -96,7 +96,7 @@ _intothevoid:
 
 	push	hl
 	ld		hl,(psound)
-	call	AYFX.PLAY
+	call	AYFX.PLAYON1
 	pop		hl
 
 	xor		a

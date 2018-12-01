@@ -11,7 +11,7 @@ gameoverscn:
 	ld		a,150
 	ld		(timeout),a
 
-	call	AFX.INIT
+	call	AYFX.INIT
 
 _endloop:
 	call	framesync
