@@ -61,7 +61,7 @@ _intothescore:
 	ld		(scoretoadd),a				; defer adding of score because it's register intensive
 
 	push	hl
-	ld		hl,smfx4						; update sound - gloop
+	ld		hl,smfx4					; update sound - gloop
 	ld		(psound),hl
 	pop		hl
 

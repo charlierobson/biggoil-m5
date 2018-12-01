@@ -67,19 +67,26 @@ generatetone:
 
 
 
-smfx3:
+smfx3: ; 'hello' - enemy appears
     .incbin    "data/3.smfx"
-smfx4:
+
+smfx4: ; drill - eat oil
     .incbin    "data/4.smfx"
-smfx7:
+
+smfx7: ; pipe popped
     .incbin    "data/7.smfx"
-smfx12:
+
+smfx12: ; level clear
     .incbin    "data/12.smfx"
-smfx13:
+
+smfx13: ; game over
     .incbin    "data/13.smfx"
-smfx14:
+
+smfx14: ; enemy eaten
     .incbin    "data/14.smfx"
-smfx17:
+
+smfx17: ; drill - move
     .incbin    "data/17.smfx"
-smfx10:
+
+smfx10: ; extra live
     .incbin    "data/10.smfx"

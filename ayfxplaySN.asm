@@ -51,8 +51,8 @@ INIT:
 	ld		a,CHAN4ID+$9f
 	out		($20),a
 
-	ld		a,$e5						; start the noise
-	out		($20),a
+;	ld		a,$e5						; (don't!) start the noise
+;	out		($20),a
 
 	ret
 
@@ -70,6 +70,10 @@ FRAME:
 	call	_processChan
 
 _processNoise:
+	ret
+
+	; not happy with noise processing so far, need a 'real' player.
+
 	ld		ix,afxChDesc+CHAN_NOISE
 	ld		a,(ix+CHAN1)
 	or		(ix+CHAN2)
