@@ -75,7 +75,6 @@ public class SoundBankSplitter
                 if (nVal != 0) newCtl |= 0x40;
                 Console.Write($"Noise: {nVal} ");
                 ++i;
-                noise = false;
             }
 
             opAdd(output, newCtl);
@@ -88,8 +87,9 @@ public class SoundBankSplitter
                 opAdd(output, tHi);
             }
             if (noise){
-                if (nVal > 1) nVal = 1;
                 if (nVal > 7) nVal = 2;
+                else if (nVal > 1) nVal = 1;
+
                 opAdd(output, nVal);
             }
             Console.WriteLine("");

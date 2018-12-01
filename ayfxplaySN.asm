@@ -11,9 +11,10 @@
 
 CHAN_ADDR:		.equ	0	;(W) current addr. channel is free if MSB = 0
 CHAN_TIME:		.equ	2	;(B) current play time
-CHAN_ID:		.equ	3	;(B) channel mask used, to build register data
+CHAN_NOISE		.equ	3	;(B) noise flag
+CHAN_ID:		.equ	4	;(B) channel mask used, to build register data
 
-CHAN_SIZE = 4
+CHAN_SIZE = 5
 
 CHAN1 = 0
 CHAN2 = CHAN_SIZE
@@ -22,6 +23,7 @@ CHAN3 = CHAN_SIZE*2
 CHAN1ID = 0<<5
 CHAN2ID = 1<<5
 CHAN3ID = 2<<5
+CHAN4ID = 3<<5
 
 _BIT_T			.equ	7
 _BIT_N			.equ	6
@@ -33,15 +35,23 @@ _BIT_DRONE		.equ	5
 ;=====================================
 INIT:
 	xor		a								; silence all channels
-	ld		(afxChDesc+CHAN1),a
-	ld		(afxChDesc+CHAN2),a
-	ld		(afxChDesc+CHAN3),a
+	ld		(afxChDesc+CHAN1+CHAN_ADDR+1),a
+	ld		(afxChDesc+CHAN1+CHAN_NOISE),a
+	ld		(afxChDesc+CHAN2+CHAN_ADDR+1),a
+	ld		(afxChDesc+CHAN2+CHAN_NOISE),a
+	ld		(afxChDesc+CHAN3+CHAN_ADDR+1),a
+	ld		(afxChDesc+CHAN3+CHAN_NOISE),a
 
 	ld		a,CHAN1ID+$9f
 	out		($20),a
 	ld		a,CHAN2ID+$9f
 	out		($20),a
 	ld		a,CHAN3ID+$9f
+	out		($20),a
+	ld		a,CHAN4ID+$9f
+	out		($20),a
+
+	ld		a,$e5						; start the noise
 	out		($20),a
 
 	ret
@@ -52,8 +62,6 @@ INIT:
 ; ISR routine to generate sound.
 ;=====================================
 FRAME:
-	xor		a
-	ld		(afxNoise),a
 	ld		ix,afxChDesc+CHAN1
 	call	_processChan
 	ld		ix,afxChDesc+CHAN2
@@ -62,7 +70,16 @@ FRAME:
 	call	_processChan
 
 _processNoise:
+	ld		ix,afxChDesc+CHAN_NOISE
+	ld		a,(ix+CHAN1)
+	or		(ix+CHAN2)
+	or		(ix+CHAN3)
+	ld		a,$9f+CHAN4ID
+	jr		z,{+}
+	and		$f7
++:	out		($20),a
 	ret
+
 
 
 _processChan:
@@ -81,11 +98,12 @@ _processChan:
 	or		$90
 	out		($20),a					; chan volume
 
-	ld		a,e						; vol has been set, was this the effect terminator?
+	ld		a,e						; vol has been set, wa2s this the effect terminator?
 	cp		$3f
 	jr		nz,_channelContinues
 
 	ld		(ix+CHAN_ADDR+1),0
+	ld		(ix+CHAN_NOISE),0
 	ret
 
 _channelContinues:
@@ -112,7 +130,9 @@ _checkNoise:
 	jr		z,_updatePtr
 
 _doNoise:
+	ld		a,(hl)					; get noise enable and stash for this channel
 	inc		hl
+	ld		(ix+CHAN_NOISE),a
 
 _updatePtr:
 	ld		(ix+CHAN_ADDR),l
@@ -174,12 +194,12 @@ DRONEON3:
 
 	ld		a,(de)
 	bit		_BIT_DRONE,a				; bail if not replacing another drone
-	ret		nz
+	ret		z
 
 ;====================================================
 ; PLAYON3
 ; Unconditionally start playback of an
-; uninterruptable effect
+; uninterruptable (by chan1,2) effect
 ; HL = sfx data
 ;====================================================
 PLAYON3:
