@@ -1,11 +1,13 @@
 #!/bin/bash 
 
+# use the assembler to compile data -> raw binary, then run lz48 over the data to compress it
 function compress {
     brass data/$1.txt data/$1.bin
     data/lz48 -i data/$1.bin -o data/$1.binlz
     rm data/$1.bin
 }
 
+# if a parameter (arbitrary) is specified then don't run the data compression
 if [ -z "$1" ]; then
     compress title
     compress end
