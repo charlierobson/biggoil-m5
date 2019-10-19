@@ -4,8 +4,8 @@ BiggOil for Sord M5
 ### TODO
 
 * ~~joystick button inputs~~
-* sfx
-* music
+* ~~sfx~~
+* ~~music~~
 * refactor display code, remove NLs
 * improve graphics somewhat?
 * pipe chars -> contiguous in charset
