@@ -86,17 +86,18 @@ initVDP:  ;  set graphic 1 mode, bg col, vram layout.
 
     ; init display mode
 
-    ld      hl,graphic1data             ; pairs of bytes representing a vdp register value and register number with bit 7 set
-    ld      de,$7010                    ; copy to ram to modify PAL/NTSC bit (reg 0, bit 0)
+    ld      hl,graphic1data     ; pairs of bytes representing a vdp register value and register number with bit 7 set
+    ld      de,$7010            ; copy to ram to modify PAL/NTSC bit (reg 0, bit 0)
     push    de
     ld      bc,16
     ldir
-    ld      a,($0f)                     ; PAL ROM contains F3 at this address, NTSC ROM contains F6
-    and     1
-    ld      ($7010),a                   ; PAL/!NTSC
 
-    pop     hl                          ; data to OUT
-    ld      bc,$1011                    ; 16 bytes to port $11
+    ld      a,($1518)           ; use a difference in ROM to determine if JAP or EUR machine
+    and     1                   ; PAL has E1 here, ntsc E0
+    ld      ($7010),a           ; PAL/!NTSC
+
+    pop     hl                  ; data to OUT
+    ld      bc,$1011            ; 16 bytes to port $11
     otir
     ret
 
