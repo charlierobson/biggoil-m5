@@ -11,6 +11,7 @@ function compress {
 if [ -z "$1" ]; then
     compress title
     compress end
+    compress instructions
     compress lvl1
     compress lvl2
     compress lvl3

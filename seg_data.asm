@@ -32,6 +32,9 @@ level4:
 title:
 	.incbin data/title.binlz
 
+help:
+	.incbin data/instructions.binlz
+
 end:
 	.incbin data/end.binlz
 
@@ -96,11 +99,11 @@ clouds:
 ; this is to allow quick indexing into the map by setting
 ; a single bit in the dfile pointer, bit 2 of H reg.
 ;
-dfile = $7020
-offscreenmap = $7420		;	dfile + $400
+dfile = $7100
+offscreenmap = $7500		;	dfile + $400
 
 ; initialised data goes here, in space between dfile & offscreen
-seg_data_target = $7340		;	dfile + $300 + $20
+seg_data_target = $7420		;	dfile + $300 + $20
 
 ; uninitialised data goes here
 seg_bss_target = $7800
@@ -146,6 +149,7 @@ seg_data:
 titleinputstates:
 	.byte	$30,%01000000,%00000000,0		; startgame	(SP)
 	.byte	$32,%00001000,%00000000,0		; redefine	(R)
+	.byte	$32,%10000000,%00000000,0		; instructn	(I)
 	.byte	$31,%00000001,%00000000,0		; jscegin	(1)
 
 gameinputstates:
@@ -160,7 +164,8 @@ gameinputstates:
 ;
 begin	= titleinputstates + 3
 redef	= titleinputstates + 7
-jsbegin	= titleinputstates + 11
+insts	= titleinputstates + 11
+jsbegin	= titleinputstates + 15
 
 fire	= gameinputstates + 3
 up		= gameinputstates + 7
@@ -233,7 +238,7 @@ seg_bss:
 	.var	word, keyaddress
 	.var	byte, tcd
 	.var	byte, tt
-	.var	byte, frames
+	.var	word, frames
 	.var	byte, winchframe
 	.var	word, playerpos
 	.var	word, oldplayerpos

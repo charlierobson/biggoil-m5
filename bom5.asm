@@ -1,4 +1,5 @@
-    .org $2000
+    loadaddr=$2000
+    .org loadaddr
 
 #include "gamedefs.asm"
 
@@ -16,9 +17,9 @@ ipl:
 vbl:
     exx
     push    af
-    ld      a,(frames)
-    inc     a
-    ld      (frames),a
+    ld      hl,(frames)
+    inc     hl
+    ld      (frames),hl
 
     call    AYFX.FRAME
 
@@ -65,6 +66,7 @@ start:
 #include "redefine.asm"
 #include "game.asm"
 #include "gameoverscrn.asm"
+#include "helpscrn.asm"
 
 #include "player.asm"
 #include "enemies.asm"
@@ -86,7 +88,7 @@ start:
 #include "seg_data.asm"
 
     .echoln ""
-    .echo "Rom size is ", $-$2000
+    .echo "Rom size is ", $-loadaddr
     .echoln " bytes."
     .echoln ""
 

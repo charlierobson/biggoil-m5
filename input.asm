@@ -3,15 +3,16 @@
 .module INPUT
 
 prepTitleInputs:
+	ld		b,4
 	ld		hl,titleinputstates+3
 	jr		_prepinputs
 
 prepGameInputs:
+	ld		b,6
 	ld		hl,gameinputstates+3
 
 _prepinputs:
 	ld		de,4
-	ld		b,5
 
 -:	ld		(hl),$ff
 	add		hl,de
@@ -30,6 +31,7 @@ readtitleinput:
 	ld		hl,titleinputstates
 	call	updateinputstate ; (begin)
 	call	updateinputstate ; (redefine)
+	call	updateinputstate ; (instructions)
 	jp		updateinputstate ; (jsfire)
 
 

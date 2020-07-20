@@ -201,9 +201,11 @@ testit:
     ld      a,3
 
 _bit2byte:
+	push	hl
 	ld		hl,_bit2bytetbl
 	ld		bc,8
 	cpir
+	pop		hl
     ret                             ; P set if key bit wasn't found (2 keys at once?)
 
 
@@ -242,6 +244,51 @@ _showkey:
     jr      {+}
 
 -:	out     (VDP_DATA),a
++:	ld		a,(hl)
+    inc     hl
+	cp		$ff
+	jr		nz,{-}
+	ret
+
+
+_keytobuf:
+	ld		hl,_keychar
+	ld		a,(keyport)
+    sub     $30
+	add		a,a
+	add		a,a
+	add		a,a
+	add		a,l
+    ld      l,a
+
+	ld		a,(keybit)
+    call    REDEF._bit2byte
+	ld		a,c
+	add		a,l
+	ld		l,a
+
+	ld		a,(hl)                      ; is it a char or a string?
+	cp		8
+	jr		c,{+}
+
+    ; it's a char
+    ld		(de),a
+	inc		de
+	ret
+
+    ; it's a string
++:  ld		hl,_kcs
+	add		a,a
+	add		a,l
+	ld		l,a
+	ld		a,(hl)
+	inc		hl
+	ld		h,(hl)
+	ld		l,a
+    jr      {+}
+
+-:	ld     (de),a
+	inc		de
 +:	ld		a,(hl)
     inc     hl
 	cp		$ff

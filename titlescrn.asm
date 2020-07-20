@@ -2,10 +2,18 @@
 ;
 .module TSC
 
+
 _tt1:
-	.asc	"press fire"
+	.asc	" space to start "
 _tt2:
-	.asc	"r:redefine"
+	.asc	"r - redefine key"
+_tt3:
+	.asc	"i - instructions"
+
+	.align	8
+_ttbl:
+	.dw		_tt1,_tt2,_tt1,_tt3
+
 
 titlescn:
 	ld		hl,title
@@ -19,26 +27,28 @@ titlescn:
 _titleloop:
 	call	framesync
 
-	ld		a,(frames)
-	and		127
-	jr		nz,_nochangetext
+	ld		a,(frames+1)
+	and		3
+	add		a,a
+	ld		hl,_ttbl
+	or		l
+	ld		l,a
+	ld		a,(hl)
+	inc		hl
+	ld		h,(hl)
+	ld		l,a
 
-	ld		hl,_tt1
-	ld		a,(frames)
-	and		128
-	jr		nz,{+}
-	ld		hl,_tt2
-+:  ld		de,dfile+$303
-	ld		bc,10
+  	ld		de,dfile+$300
+	ld		bc,16
 	ldir
 
 _nochangetext:
 	ld		  a,(frames)
-	and		 15
+	and		  16
 	jr		  nz,_noflash
 
-	ld		  hl,dfile+$303
-	ld		  b,10
+	ld		  hl,dfile+$300
+	ld		  b,16
 _ilop:
 	ld		  a,(hl)
 	xor		 $80
@@ -57,13 +67,22 @@ _noflash:
 	call	redefinekeys			; redefine keys and copy any altered fire/start key
 	ld		hl,(fire-3)
 	ld		(begin-3),hl
+	jr		titlescn
 
 +:	ld		a,(begin)
 	and		3
 	cp		1
 	ret		z
 
-	ld		a,(jsbegin)
+	ld		a,(insts)
+	and		3
+	cp		1
+	jr		nz,{+}
+
+	call	instructions
+	jr		titlescn
+
++:	ld		a,(jsbegin)
 	and		3
 	cp		1
 	jr		nz,_titleloop
